@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Menú Digital & Comanda por Mesa - MY FACTORY APPS AR</title>
+
+  <!-- PWA Manifest & Meta -->
+  <link rel="manifest" href="data:application/json,{%22name%22:%22GastroBar%22,%22short_name%22:%22Gastro%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%230b0f19%22,%22theme_color%22:%22%23f59e0b%22}">
+  <meta name="theme-color" content="#f59e0b">
+
+  <!-- Fuentes & Librería QR -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: rgba(22, 30, 46, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --accent: #f59e0b;
+      --accent-glow: rgba(245, 158, 11, 0.35);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --danger: #ef4444;
+      --success: #10b981;
+    }
+
+    [data-theme="cyan"] { --accent: #06b6d4; --accent-glow: rgba(6, 182, 212, 0.35); }
+    [data-theme="emerald"] { --accent: #10b981; --accent-glow: rgba(16, 185, 129, 0.35); }
+    [data-theme="purple"] { --accent: #a855f7; --accent-glow: rgba(168, 85, 247, 0.35); }
+    [data-theme="rose"] { --accent: #f43f5e; --accent-glow: rgba(244, 63, 94, 0.35); }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 110px; min-height: 100vh; }
+
+    /* Header Banner */
+    .hero { position: relative; width: 100%; height: 210px; overflow: hidden; background: #1a2234; }
+    .hero-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.65); }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, var(--bg) 5%, transparent 90%); }
+
+    .profile-header { position: relative; margin-top: -60px; padding: 0 20px; text-align: center; z-index: 10; }
+    .avatar-wrap { position: relative; display: inline-block; }
+    .avatar { width: 105px; height: 105px; border-radius: 22px; object-fit: cover; border: 3px solid var(--accent); box-shadow: 0 0 20px var(--accent-glow); background: #1e293b; }
+
+    h1 { font-size: 1.65rem; font-weight: 800; margin-top: 10px; color: #fff; }
+    .subtitle { font-size: 0.9rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* Selector de Mesas / Modalidad */
+    .mode-selector { margin-top: 14px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); padding: 6px; border-radius: 14px; display: inline-flex; gap: 6px; }
+    .mode-btn { background: none; border: none; color: var(--text-muted); padding: 6px 14px; border-radius: 10px; font-size: 0.82rem; font-weight: 700; cursor: pointer; }
+    .mode-btn.active { background: var(--accent); color: #000; font-weight: 800; box-shadow: 0 0 12px var(--accent-glow); }
+
+    .table-badge { margin-top: 10px; display: inline-block; background: rgba(245, 158, 11, 0.15); border: 1px solid var(--accent); color: var(--accent); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
+
+    /* Categorías */
+    .cat-bar { display: flex; gap: 8px; overflow-x: auto; padding: 15px 16px 5px; scrollbar-width: none; }
+    .cat-bar::-webkit-scrollbar { display: none; }
+    .cat-chip { background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: var(--text-muted); padding: 8px 16px; border-radius: 20px; font-size: 0.82rem; font-weight: 600; white-space: nowrap; cursor: pointer; }
+    .cat-chip.active { background: var(--accent); color: #000; font-weight: 800; border-color: var(--accent); }
+
+    /* Layout & Cards */
+    .container { padding: 15px 16px; max-width: 600px; margin: 0 auto; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .card { background: var(--card-bg); border-radius: 18px; border: 1px solid var(--card-border); overflow: hidden; backdrop-filter: blur(12px); }
+    .card-img-wrap { position: relative; width: 100%; height: 170px; background: #1e293b; }
+    .card-img { width: 100%; height: 100%; object-fit: cover; }
+    .badge { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); border: 1px solid var(--accent); color: var(--accent); font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 12px; text-transform: uppercase; }
+
+    .card-body { padding: 16px; }
+    .card-title { font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .card-desc { font-size: 0.85rem; color: var(--text-muted); margin: 6px 0 14px; line-height: 1.4; }
+    .card-footer { display: flex; justify-content: space-between; align-items: center; }
+    .price { font-size: 1.3rem; font-weight: 800; color: var(--accent); }
+
+    /* Botones y Carrito */
+    .btn { background: var(--accent); color: #000; border: none; padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 0.88rem; cursor: pointer; box-shadow: 0 0 15px var(--accent-glow); transition: transform 0.2s; }
+    .btn:active { transform: scale(0.96); }
+
+    .cart-bar { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: calc(100% - 32px); max-width: 568px; background: var(--accent); color: #000; border-radius: 18px; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 25px var(--accent-glow); z-index: 900; font-weight: 800; cursor: pointer; }
+
+    /* Modales */
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; padding: 16px; backdrop-filter: blur(8px); }
+    .modal.active { display: flex; }
+    .modal-card { background: #131b2e; border: 1px solid var(--card-border); border-radius: 22px; padding: 22px; width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto; }
+    .close-btn { float: right; background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
+
+    label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); display: block; margin-top: 12px; margin-bottom: 4px; }
+    input, select, textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: #fff; padding: 12px; border-radius: 10px; font-size: 0.9rem; outline: none; }
+    
+    .admin-trigger { text-align: center; margin-top: 35px; color: var(--text-muted); font-size: 0.8rem; cursor: pointer; text-decoration: underline; }
+    #qrcode { display: flex; justify-content: center; background: #fff; padding: 12px; border-radius: 12px; margin-top: 15px; }
+  </style>
+</head>
+<body>
+
+  <!-- Banner & Cabecera -->
+  <div class="hero">
+    <img id="view-banner" class="hero-img" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800" alt="Banner Gastronomía">
+    <div class="hero-overlay"></div>
+  </div>
+
+  <div class="profile-header">
+    <div class="avatar-wrap">
+      <img id="view-logo" class="avatar" src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400" alt="Logo Restaurante">
+    </div>
+    <h1 id="view-title">GASTROBAR RESTO</h1>
+    <p id="view-subtitle" class="subtitle">Menú Digital & Pedidos en Vivo</p>
+
+    <div class="mode-selector">
+      <button class="mode-btn active" id="btn-mode-mesa" onclick="setMode('mesa')">🪑 Pedir a Mesa</button>
+      <button class="mode-btn" id="btn-mode-delivery" onclick="setMode('delivery')">🛵 Delivery / Take Away</button>
+    </div>
+
+    <div id="table-info" class="table-badge">Mesa Seleccionada: <strong id="current-table-display">Mesa 1</strong></div>
+  </div>
+
+  <!-- Barra de Categorías -->
+  <div class="cat-bar" id="cat-bar">
+    <button class="cat-chip active" onclick="filterCat('Todos')">Todos</button>
+    <button class="cat-chip" onclick="filterCat('Platos Principal')">Platos Principal</button>
+    <button class="cat-chip" onclick="filterCat('Hamburguesas')">Hamburguesas</button>
+    <button class="cat-chip" onclick="filterCat('Bebidas')">Bebidas</button>
+    <button class="cat-chip" onclick="filterCat('Postres')">Postres</button>
+  </div>
+
+  <!-- Grilla de Menú -->
+  <div class="container">
+    <div class="grid" id="menu-grid"></div>
+    <div class="admin-trigger" onclick="openModal('admin-modal')">⚙ Panel de Administración (Cargar fotos cel)</div>
+  </div>
+
+  <!-- Barra Flotante de Carrito -->
+  <div class="cart-bar" id="cart-bar" style="display: none;" onclick="openModal('cart-modal')">
+    <span>🛒 Pedido (<span id="cart-count">0</span>)</span>
+    <span>Ver Pedido: $<span id="cart-total">0</span> ➔</span>
+  </div>
+
+  <!-- Modal Detalle del Carrito -->
+  <div class="modal" id="cart-modal">
+    <div class="modal-card">
+      <button class="close-btn" onclick="closeModal('cart-modal')">&times;</button>
+      <h2 style="color: #fff; font-size: 1.25rem; margin-bottom: 12px;">Tu Pedido</h2>
+      
+      <div id="cart-items-list"></div>
+      
+      <div style="margin-top: 15px; font-size: 1.2rem; font-weight: 800; text-align: right; color: var(--accent);">
+        Total: $<span id="cart-modal-total">0</span>
+      </div>
+
+      <div id="sec-mesa-input">
+        <label>Número de Mesa / Ubicación:</label>
+        <input type="number" id="input-mesa-num" value="1" min="1">
+      </div>
+
+      <div id="sec-delivery-input" style="display: none;">
+        <label>Nombre Completo:</label>
+        <input type="text" id="input-client-name" placeholder="Ej: Juan Pérez">
+        <label>Dirección de Entrega / Barrio:</label>
+        <input type="text" id="input-client-address" placeholder="Ej: Av. Mayo 1234">
+      </div>
+
+      <label>Notas Adicionales / Aclaraciones:</label>
+      <textarea id="input-notes" rows="2" placeholder="Ej: Sin cebolla / Aderezos aparte"></textarea>
+
+      <button class="btn" style="width: 100%; margin-top: 18px;" onclick="sendOrderWA()">Enviar Pedido por WhatsApp</button>
+    </div>
+  </div>
+
+  <!-- Modal Admin -->
+  <div class="modal" id="admin-modal">
+    <div class="modal-card">
+      <button class="close-btn" onclick="closeModal('admin-modal')">&times;</button>
+      <h2>Administración Menú Gastro</h2>
+      
+      <div id="admin-login-sec">
+        <label>Clave Admin (admin123):</label>
+        <input type="password" id="admin-pass">
+        <button class="btn" style="width: 100%; margin-top: 12px;" onclick="loginAdmin()">Ingresar</button>
+      </div>
+
+      <div id="admin-panel-sec" style="display: none;">
+        <label>Tema de Color:</label>
+        <select id="cfg-theme" onchange="applyTheme(this.value)">
+          <option value="amber">Ámbar Gastronómico</option>
+          <option value="cyan">Cyan Neón</option>
+          <option value="emerald">Verde Fresco</option>
+          <option value="purple">Violeta Moderno</option>
+          <option value="rose">Rosa Neón</option>
+        </select>
+
+        <label>Nombre del Local:</label>
+        <input type="text" id="cfg-title">
+        <label>Subtítulo / Eslogan:</label>
+        <input type="text" id="cfg-subtitle">
+        <label>WhatsApp Mozos / Cocina:</label>
+        <input type="text" id="cfg-phone">
+
+        <label>📷 Foto de Portada (Galería):</label>
+        <input type="file" id="cfg-file-banner" accept="image/*">
+        <label>📷 Logo / Avatar (Galería):</label>
+        <input type="file" id="cfg-file-logo" accept="image/*">
+
+        <button class="btn" style="width:100%; margin-top:15px;" onclick="saveConfig()">Guardar Cambios</button>
+
+        <hr style="margin: 20px 0; border-color: var(--card-border);">
+        <h3>Cargar Plato / Producto (Galería Celular)</h3>
+        
+        <label>Categoría:</label>
+        <select id="new-item-cat">
+          <option value="Platos Principal">Platos Principal</option>
+          <option value="Hamburguesas">Hamburguesas</option>
+          <option value="Bebidas">Bebidas</option>
+          <option value="Postres">Postres</option>
+        </select>
+
+        <label>Nombre del Plato:</label>
+        <input type="text" id="new-item-title">
+        <label>Precio ($):</label>
+        <input type="number" id="new-item-price">
+        <label>Ingredientes / Descripción:</label>
+        <input type="text" id="new-item-desc">
+        <label>📷 Foto del Plato (Galería Celular):</label>
+        <input type="file" id="new-item-file" accept="image/*">
+
+        <button class="btn" style="width:100%; margin-top:15px; background:var(--success); color:#fff;" onclick="addItem()">Publicar Plato</button>
+
+        <hr style="margin: 20px 0; border-color: var(--card-border);">
+        <h3>Generador de Código QR de Mesa</h3>
+        <label>Elegir Número de Mesa para el QR:</label>
+        <input type="number" id="qr-table-num" value="1" onchange="generateTableQR(this.value)">
+        <div id="qrcode"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Parámetros de URL para Mesa (Ej: app.html?mesa=5)
+    const urlParams = new URLSearchParams(window.location.search);
+    let tableFromUrl = urlParams.get('mesa') || "1";
+
+    let currentMode = 'mesa';
+    let currentCat = 'Todos';
+    let cart = [];
+
+    let config = JSON.parse(localStorage.getItem('gastro_cfg')) || {
+      title: 'GASTROBAR RESTO',
+      subtitle: 'Menú Digital & Pedidos en Vivo',
+      phone: '5491100000000',
+      theme: 'amber',
+      banner: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800',
+      logo: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400'
+    };
+
+    let items = JSON.parse(localStorage.getItem('gastro_items')) || [
+      { id: 1, title: 'Hamburguesa Doble Cheddar', price: 8500, cat: 'Hamburguesas', desc: 'Doble medallón de carne, cheddar estacionado, panceta crocante y salsa de la casa.', badge: 'Más Vendido', img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500' },
+      { id: 2, title: 'Pinta Cerveza IPA Artesanal', price: 3200, cat: 'Bebidas', desc: 'Cerveza artesanal tirada bien helada 500cc.', badge: 'Recomendado', img: 'https://images.unsplash.com/photo-1608270586620-248524c67de9?w=500' }
+    ];
+
+    let tempBanner = "", tempLogo = "", tempItemImg = "";
+
+    function init() {
+      applyTheme(config.theme);
+      document.getElementById('view-title').innerText = config.title;
+      document.getElementById('view-subtitle').innerText = config.subtitle;
+      document.getElementById('view-banner').src = config.banner;
+      document.getElementById('view-logo').src = config.logo;
+      document.getElementById('current-table-display').innerText = `Mesa ${tableFromUrl}`;
+      document.getElementById('input-mesa-num').value = tableFromUrl;
+
+      renderMenu();
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      config.theme = theme;
+    }
+
+    function setMode(mode) {
+      currentMode = mode;
+      document.getElementById('btn-mode-mesa').classList.toggle('active', mode === 'mesa');
+      document.getElementById('btn-mode-delivery').classList.toggle('active', mode === 'delivery');
+      document.getElementById('table-info').style.display = mode === 'mesa' ? 'inline-block' : 'none';
+      document.getElementById('sec-mesa-input').style.display = mode === 'mesa' ? 'block' : 'none';
+      document.getElementById('sec-delivery-input').style.display = mode === 'delivery' ? 'block' : 'none';
+    }
+
+    function filterCat(cat) {
+      currentCat = cat;
+      document.querySelectorAll('.cat-chip').forEach(c => {
+        c.classList.toggle('active', c.innerText === cat);
+      });
+      renderMenu();
+    }
+
+    function renderMenu() {
+      const filtered = currentCat === 'Todos' ? items : items.filter(i => i.cat === currentCat);
+      
+      document.getElementById('menu-grid').innerHTML = filtered.map(i => `
+        <div class="card">
+          <div class="card-img-wrap">
+            <span class="badge">${i.badge || i.cat}</span>
+            <img src="${i.img}" class="card-img" alt="${i.title}">
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">${i.title}</h3>
+            <p class="card-desc">${i.desc}</p>
+            <div class="card-footer">
+              <span class="price">$${i.price}</span>
+              <button class="btn" onclick="addToCart(${i.id})">+ Agregar</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    /* Carrito */
+    function addToCart(id) {
+      const item = items.find(i => i.id === id);
+      const existing = cart.find(c => c.id === id);
+      
+      if (existing) {
+        existing.qty++;
+      } else {
+        cart.push({ ...item, qty: 1 });
+      }
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      const count = cart.reduce((acc, c) => acc + c.qty, 0);
+      const total = cart.reduce((acc, c) => acc + (c.price * c.qty), 0);
+
+      document.getElementById('cart-count').innerText = count;
+      document.getElementById('cart-total').innerText = total;
+      document.getElementById('cart-modal-total').innerText = total;
+      document.getElementById('cart-bar').style.display = count > 0 ? 'flex' : 'none';
+
+      document.getElementById('cart-items-list').innerHTML = cart.map(c => `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; background:rgba(255,255,255,0.03); padding:10px; border-radius:10px;">
+          <div>
+            <div style="font-weight:700; color:#fff;">${c.title}</div>
+            <div style="font-size:0.8rem; color:var(--text-muted);">$${c.price} x ${c.qty}</div>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button class="btn" style="padding:4px 10px;" onclick="changeQty(${c.id}, -1)">-</button>
+            <span style="font-weight:bold;">${c.qty}</span>
+            <button class="btn" style="padding:4px 10px;" onclick="changeQty(${c.id}, 1)">+</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function changeQty(id, delta) {
+      const item = cart.find(c => c.id === id);
+      if (item) {
+        item.qty += delta;
+        if (item.qty <= 0) cart = cart.filter(c => c.id !== id);
+      }
+      updateCartUI();
+    }
+
+    function sendOrderWA() {
+      if (cart.length === 0) return;
+
+      const notes = document.getElementById('input-notes').value;
+      const total = cart.reduce((acc, c) => acc + (c.price * c.qty), 0);
+      let orderDetail = cart.map(c => `• ${c.qty}x ${c.title} ($${c.price * c.qty})`).join('\n');
+
+      let msg = "";
+      if (currentMode === 'mesa') {
+        const mesa = document.getElementById('input-mesa-num').value;
+        msg = `🍽 *NUEVO PEDIDO A MESA ${mesa}*\n\n${orderDetail}\n\n💰 *Total:* $${total}\n📝 *Notas:* ${notes || 'Ninguna'}`;
+      } else {
+        const name = document.getElementById('input-client-name').value;
+        const address = document.getElementById('input-client-address').value;
+        if (!name || !address) { alert('Completá tu nombre y dirección para el delivery.'); return; }
+        msg = `🛵 *NUEVO PEDIDO DELIVERY*\n👤 *Cliente:* ${name}\n📍 *Dirección:* ${address}\n\n${orderDetail}\n\n💰 *Total:* $${total}\n📝 *Notas:* ${notes || 'Ninguna'}`;
+      }
+
+      closeModal('cart-modal');
+      window.open(`https://wa.me/${config.phone}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    /* Manejo de Archivos Galería (FileReader API) */
+    document.getElementById('cfg-file-banner').addEventListener('change', e => readFile(e, res => tempBanner = res));
+    document.getElementById('cfg-file-logo').addEventListener('change', e => readFile(e, res => tempLogo = res));
+    document.getElementById('new-item-file').addEventListener('change', e => readFile(e, res => tempItemImg = res));
+
+    function readFile(e, callback) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = evt => callback(evt.target.result);
+        reader.readAsDataURL(file);
+      }
+    }
+
+    /* Modales & Admin */
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    function loginAdmin() {
+      if(document.getElementById('admin-pass').value === 'admin123') {
+        document.getElementById('admin-login-sec').style.display = 'none';
+        document.getElementById('admin-panel-sec').style.display = 'block';
+        document.getElementById('cfg-title').value = config.title;
+        document.getElementById('cfg-subtitle').value = config.subtitle;
+        document.getElementById('cfg-phone').value = config.phone;
+
+        generateTableQR(1);
+      } else { alert('Clave incorrecta'); }
+    }
+
+    function saveConfig() {
+      config.title = document.getElementById('cfg-title').value;
+      config.subtitle = document.getElementById('cfg-subtitle').value;
+      config.phone = document.getElementById('cfg-phone').value;
+      if(tempBanner) config.banner = tempBanner;
+      if(tempLogo) config.logo = tempLogo;
+
+      localStorage.setItem('gastro_cfg', JSON.stringify(config));
+      init();
+      alert('Configuración del menú guardada.');
+    }
+
+    function addItem() {
+      const cat = document.getElementById('new-item-cat').value;
+      const title = document.getElementById('new-item-title').value;
+      const price = document.getElementById('new-item-price').value;
+      const desc = document.getElementById('new-item-desc').value;
+
+      if(!title || !price || !tempItemImg) { alert('Completá nombre, precio y seleccioná una foto de tu celular.'); return; }
+
+      items.push({ id: Date.now(), title, price: Number(price), cat, desc, badge: 'Nuevo', img: tempItemImg });
+      localStorage.setItem('gastro_items', JSON.stringify(items));
+      renderMenu();
+      alert('¡Plato publicado correctamente!');
+    }
+
+    function generateTableQR(tableNum) {
+      const baseUrl = window.location.href.split('?')[0];
+      const tableUrl = `${baseUrl}?mesa=${tableNum}`;
+      document.getElementById('qrcode').innerHTML = '';
+      new QRCode(document.getElementById("qrcode"), { text: tableUrl, width: 140, height: 140 });
+    }
+
+    init();
+  </script>
+</body>
+</html>

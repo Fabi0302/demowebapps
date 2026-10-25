@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title id="page-title">HOME PRO - Servicios & Mantenimiento del Hogar</title>
+
+  <!-- PWA Manifest & Meta -->
+  <link rel="manifest" href="data:application/json,{%22name%22:%22ServiciosHogarPWA%22,%22short_name%22:%22HomeProPWA%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23080c14%22,%22theme_color%22:%22%2310b981%22}">
+  <meta name="theme-color" content="#10b981">
+
+  <!-- Fuentes & Librería QR -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #080c14;
+      --card-bg: rgba(15, 23, 42, 0.88);
+      --card-border: rgba(16, 185, 129, 0.35);
+      --accent: #10b981; /* Verde Esmeralda Pro */
+      --accent-glow: rgba(16, 185, 129, 0.4);
+      --ig-gradient: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 110px; min-height: 100vh; }
+
+    /* Hero Banner Premium */
+    .hero { position: relative; width: 100%; height: 230px; overflow: hidden; background: #0f172a; border-bottom: 3px solid var(--accent); }
+    .hero-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6) contrast(1.1); }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, var(--bg) 15%, transparent 85%); }
+
+    .profile-header { position: relative; margin-top: -65px; padding: 0 20px; text-align: center; z-index: 10; }
+    .avatar-wrap { position: relative; display: inline-block; }
+    .avatar { width: 110px; height: 110px; border-radius: 26px; object-fit: cover; border: 3px solid var(--accent); box-shadow: 0 0 25px var(--accent-glow); background: #0f172a; }
+
+    h1 { font-size: 1.75rem; font-weight: 800; margin-top: 10px; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; }
+    .subtitle { font-size: 0.9rem; color: var(--text-muted); margin-top: 3px; font-weight: 500; }
+
+    /* Barra Social Premium (WhatsApp + Instagram) */
+    .social-bar { display: flex; justify-content: center; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+    .social-btn {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 10px 20px;
+      border-radius: 24px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .social-btn:active { transform: scale(0.96); }
+    .social-btn.whatsapp {
+      background: #25d366;
+      color: #fff;
+      border: none;
+      box-shadow: 0 0 15px rgba(37, 211, 102, 0.4);
+    }
+    .social-btn.instagram {
+      background: var(--ig-gradient);
+      color: #fff;
+      border: none;
+      box-shadow: 0 0 15px rgba(220, 39, 67, 0.4);
+    }
+
+    /* Contenedor Principal & Cards */
+    .container { padding: 24px 16px; max-width: 600px; margin: 0 auto; }
+    .section-title { font-size: 1.15rem; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; color: var(--accent); border-left: 4px solid var(--accent); padding-left: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .grid { display: grid; gap: 20px; }
+    .card { background: var(--card-bg); border-radius: 20px; border: 1px solid var(--card-border); overflow: hidden; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .card-img-wrap { position: relative; width: 100%; height: 220px; background: #1e293b; }
+    .card-img { width: 100%; height: 100%; object-fit: cover; }
+    .badge { position: absolute; top: 14px; right: 14px; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); border: 1px solid var(--accent); color: var(--accent); font-size: 0.72rem; font-weight: 800; padding: 5px 12px; border-radius: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .card-body { padding: 18px; }
+    .card-title { font-size: 1.25rem; font-weight: 800; color: #fff; }
+    .card-desc { font-size: 0.9rem; color: var(--text-muted); margin: 8px 0 14px; line-height: 1.5; white-space: pre-line; }
+    .card-photo-caption { font-size: 0.82rem; font-style: italic; color: #a7f3d0; background: rgba(16, 185, 129, 0.12); border-left: 3px solid var(--accent); padding: 8px 12px; border-radius: 6px; margin-bottom: 14px; }
+
+    .card-footer { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .price { font-size: 1.4rem; font-weight: 900; color: var(--accent); }
+
+    .btn { background: var(--accent); color: #000; border: none; padding: 11px 20px; border-radius: 14px; font-weight: 800; font-size: 0.9rem; cursor: pointer; box-shadow: 0 0 18px var(--accent-glow); transition: transform 0.2s; text-transform: uppercase; letter-spacing: 0.5px; }
+    .btn:active { transform: scale(0.96); }
+
+    /* Modales */
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 1000; justify-content: center; align-items: center; padding: 16px; backdrop-filter: blur(8px); }
+    .modal.active { display: flex; }
+    .modal-card { background: #0f172a; border: 1px solid var(--card-border); border-radius: 24px; padding: 24px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+    .close-btn { float: right; background: none; border: none; color: var(--text-muted); font-size: 1.6rem; cursor: pointer; }
+
+    label { font-size: 0.82rem; font-weight: 700; color: var(--text-muted); display: block; margin-top: 14px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+    input, select, textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: #fff; padding: 12px 14px; border-radius: 12px; font-size: 0.95rem; outline: none; }
+    input:focus, textarea:focus { border-color: var(--accent); }
+    
+    .admin-trigger { text-align: center; margin-top: 40px; color: var(--text-muted); font-size: 0.82rem; cursor: pointer; text-decoration: underline; font-weight: 600; }
+    #qrcode { display: flex; justify-content: center; background: #fff; padding: 14px; border-radius: 14px; margin-top: 18px; }
+  </style>
+</head>
+<body>
+
+  <!-- Hero Banner -->
+  <div class="hero">
+    <img id="view-banner" class="hero-img" src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=900" alt="Banner Servicios Hogar">
+    <div class="hero-overlay"></div>
+  </div>
+
+  <!-- Header Perfil -->
+  <div class="profile-header">
+    <div class="avatar-wrap">
+      <img id="view-logo" class="avatar" src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400" alt="Logo Empresa Hogar">
+    </div>
+    <h1 id="view-title">HOME PRO SERVICES</h1>
+    <p id="view-subtitle" class="subtitle">Electricidad, Plomería, Aire Acondicionado & Reformas</p>
+
+    <!-- Botones de Redes Sociales (WhatsApp + Instagram con diseño premium) -->
+    <div class="social-bar">
+      <button class="social-btn whatsapp" onclick="sendWhatsAppDirect()">💬 Urgencias & Presupuestos</button>
+      <a id="view-ig-link" href="#" target="_blank" class="social-btn instagram">📸 Instagram Oficial</a>
+    </div>
+  </div>
+
+  <!-- Contenido de Servicios -->
+  <div class="container">
+    <div class="section-title">
+      <span>Rubros & Soluciones para el Hogar</span>
+    </div>
+    <div class="grid" id="items-grid"></div>
+
+    <div class="admin-trigger" onclick="openModal('admin-modal')">⚙ Panel de Administración (admin123)</div>
+  </div>
+
+  <!-- Modal Solicitar Presupuesto / Visita Técnica -->
+  <div class="modal" id="action-modal">
+    <div class="modal-card">
+      <button class="close-btn" onclick="closeModal('action-modal')">&times;</button>
+      <h2 id="modal-item-title" style="color: #fff; font-size: 1.3rem; font-weight: 800;">Solicitar Presupuesto</h2>
+      
+      <label>Tu Nombre y Apellido:</label>
+      <input type="text" id="client-name" placeholder="Ej: Marcelo Rossi">
+
+      <label>Zona / Barrio o Domicilio:</label>
+      <input type="text" id="client-location" placeholder="Ej: Belgrano, CABA / Ramos Mejía">
+
+      <label>Tipo de Atención:</label>
+      <select id="client-urgency">
+        <option value="Urgencia 24 Horas">🚨 Urgencia 24 Horas</option>
+        <option value="Visita Técnica Programada">📅 Visita Técnica Programada</option>
+        <option value="Presupuesto por Foto / Detalle">📸 Presupuesto por Foto / Detalle</option>
+      </select>
+
+      <label>Detalle del Trabajo o Problema:</label>
+      <textarea id="client-notes" rows="3" placeholder="Ej: Pérdida de agua en lavadero / Instalación de 2 aires acondicionados."></textarea>
+
+      <button class="btn" style="width: 100%; margin-top: 22px;" onclick="submitOrder()">Enviar Presupuesto por WhatsApp</button>
+    </div>
+  </div>
+
+  <!-- Modal Admin -->
+  <div class="modal" id="admin-modal">
+    <div class="modal-card">
+      <button class="close-btn" onclick="closeModal('admin-modal')">&times;</button>
+      <h2 style="color: #fff; font-size: 1.3rem; font-weight: 800; margin-bottom: 10px;">Administración Servicios Hogar</h2>
+      
+      <div id="admin-login-sec">
+        <label>Contraseña Admin (admin123):</label>
+        <input type="password" id="admin-pass">
+        <button class="btn" style="width: 100%; margin-top: 15px;" onclick="loginAdmin()">Ingresar</button>
+      </div>
+
+      <div id="admin-panel-sec" style="display: none;">
+        <label>Nombre de la Empresa / Marca:</label>
+        <input type="text" id="cfg-title">
+
+        <label>Subtítulo / Especialidades:</label>
+        <input type="text" id="cfg-subtitle">
+
+        <label>WhatsApp Contacto (Sin +):</label>
+        <input type="text" id="cfg-phone">
+
+        <label>📸 Instagram (Usuario o Link completo):</label>
+        <input type="text" id="cfg-instagram" placeholder="Ej: homepro_servicios o https://instagram.com/homepro_servicios">
+
+        <label>📷 Foto de Portada Banner (Galería Celular):</label>
+        <input type="file" id="cfg-file-banner" accept="image/*">
+
+        <label>📷 Foto Perfil / Logo (Galería Celular):</label>
+        <input type="file" id="cfg-file-logo" accept="image/*">
+
+        <button class="btn" style="width:100%; margin-top:18px;" onclick="saveConfig()">Guardar Cambios Generales</button>
+
+        <hr style="margin: 24px 0; border-color: var(--card-border);">
+        <h3 style="color: #fff; font-size: 1.1rem; font-weight: 700;">Publicar Servicio para el Hogar</h3>
+        
+        <label>Nombre del Servicio / Rubro:</label>
+        <input type="text" id="new-item-title" placeholder="Ej: Instalación & Mantenimiento de A/A">
+        
+        <label>Etiqueta / Badge:</label>
+        <input type="text" id="new-item-badge" placeholder="Ej: Climatización | Garantía">
+
+        <label>Precio Desde ($):</label>
+        <input type="number" id="new-item-price" placeholder="Ej: 30000">
+        
+        <label>Descripción detallada:</label>
+        <textarea id="new-item-desc" rows="2" placeholder="Instalación matriculada, carga de gas refrigerante, limpieza de filtros..."></textarea>
+        
+        <label>✍️ Pie de foto explicativo:</label>
+        <input type="text" id="new-item-caption" placeholder="Ej: *Técnicos matriculados. Garantía escrita de 1 año.*">
+
+        <label>📷 Foto del Trabajo (Galería Celular):</label>
+        <input type="file" id="new-item-file" accept="image/*">
+
+        <button class="btn" style="width:100%; margin-top:18px; background: var(--accent); color:#000;" onclick="addItem()">Publicar Servicio</button>
+
+        <div id="qrcode"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let config = JSON.parse(localStorage.getItem('hogar_cfg')) || {
+      title: 'HOME PRO SERVICES',
+      subtitle: 'Electricidad, Plomería, Aire Acondicionado & Reformas',
+      phone: '5491100000000',
+      instagram: 'https://instagram.com',
+      banner: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=900',
+      logo: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400'
+    };
+
+    let items = JSON.parse(localStorage.getItem('hogar_items')) || [
+      { 
+        id: 1, 
+        title: 'Instalación & Service de Aire Acondicionado', 
+        price: 35000, 
+        desc: 'Instalación matriculada Split/Inverter, carga de gas R410/R32, limpieza técnica profunda y reparación de placas electrónicas.', 
+        caption: '❄️ Mantenimiento preventivo e instalación matriculada.',
+        badge: 'Climatización', 
+        img: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=600' 
+      },
+      { 
+        id: 2, 
+        title: 'Electricidad Matriculada & Tableros', 
+        price: 25000, 
+        desc: 'Detección de cortocircuitos, montaje de térmicas y disyuntores, cableados completos y certificación de tableros.', 
+        caption: '⚡ Atención urgente 24hs por cortes o térmicas caídas.',
+        badge: 'Urgencias 24h', 
+        img: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=600' 
+      },
+      { 
+        id: 3, 
+        title: 'Plomería & Gasista Matriculado', 
+        price: 22000, 
+        desc: 'Destape de cañerías por máquina, reparación de fugas, cambio de griferías, calefones, termotanques y pruebas de hermeticidad.', 
+        caption: '🛠️ Reparación limpia con materiales termofusión aprobados.',
+        badge: 'Plomería', 
+        img: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=600' 
+      }
+    ];
+
+    let selectedItem = null;
+    let tempBanner = "", tempLogo = "", tempItemImg = "";
+
+    function init() {
+      document.getElementById('view-title').innerText = config.title;
+      document.getElementById('view-subtitle').innerText = config.subtitle;
+      document.getElementById('view-banner').src = config.banner;
+      document.getElementById('view-logo').src = config.logo;
+      document.getElementById('page-title').innerText = `${config.title} - Servicios Hogar PWA`;
+      
+      // Integración dinámica del Botón de Instagram
+      let igVal = config.instagram || '';
+      const igBtn = document.getElementById('view-ig-link');
+      if(igVal.trim() !== '') {
+        let cleanIg = igVal.trim();
+        let handle = cleanIg.replace('https://instagram.com/', '').replace('http://instagram.com/', '').replace('@', '').replace('/', '');
+        igBtn.innerHTML = `📸 @${handle}`;
+        igBtn.href = cleanIg.startsWith('http') ? cleanIg : `https://instagram.com/${handle}`;
+        igBtn.style.display = 'inline-flex';
+      } else {
+        igBtn.style.display = 'none';
+      }
+
+      renderItems();
+    }
+
+    function renderItems() {
+      document.getElementById('items-grid').innerHTML = items.map(i => `
+        <div class="card">
+          <div class="card-img-wrap">
+            <span class="badge">${i.badge || 'Servicio'}</span>
+            <img src="${i.img}" class="card-img" alt="${i.title}">
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">${i.title}</h3>
+            <p class="card-desc">${i.desc}</p>
+            ${i.caption ? `<div class="card-photo-caption">${i.caption}</div>` : ''}
+            <div class="card-footer">
+              <span class="price">Desde $${Number(i.price).toLocaleString()}</span>
+              <button class="btn" onclick="openBooking('${i.title}')">Pedir Presupuesto</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    /* Galería Celular API FileReader */
+    document.getElementById('cfg-file-banner').addEventListener('change', e => readFile(e, res => tempBanner = res));
+    document.getElementById('cfg-file-logo').addEventListener('change', e => readFile(e, res => tempLogo = res));
+    document.getElementById('new-item-file').addEventListener('change', e => readFile(e, res => tempItemImg = res));
+
+    function readFile(e, callback) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = evt => callback(evt.target.result);
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function openBooking(title) {
+      selectedItem = title;
+      document.getElementById('modal-item-title').innerText = `Presupuesto: ${title}`;
+      openModal('action-modal');
+    }
+
+    function sendWhatsAppDirect() {
+      const phone = config.phone.replace(/[^0-9]/g, '');
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent('¡Hola! Quisiera realizar una consulta técnica o solicitar un presupuesto para mi hogar.')}`, '_blank');
+    }
+
+    function submitOrder() {
+      const name = document.getElementById('client-name').value;
+      const location = document.getElementById('client-location').value;
+      const urgency = document.getElementById('client-urgency').value;
+      const notes = document.getElementById('client-notes').value;
+      const targetPhone = config.phone.replace(/[^0-9]/g, '');
+
+      if (!name || !location) { alert('Completá tu nombre y la zona o domicilio.'); return; }
+
+      let msg = `Hola *${config.title}*!\n\n🏡 *Solicitud de Servicio:* ${selectedItem}\n👤 *Cliente:* ${name}\n📍 *Zona/Ubicación:* ${location}\n⚡ *Atención:* ${urgency}`;
+      if(notes.trim() !== '') msg += `\n📝 *Detalle/Trabajo:* ${notes.trim()}`;
+
+      closeModal('action-modal');
+      window.open(`https://wa.me/${targetPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    function loginAdmin() {
+      if(document.getElementById('admin-pass').value === 'admin123') {
+        document.getElementById('admin-login-sec').style.display = 'none';
+        document.getElementById('admin-panel-sec').style.display = 'block';
+        document.getElementById('cfg-title').value = config.title;
+        document.getElementById('cfg-subtitle').value = config.subtitle;
+        document.getElementById('cfg-phone').value = config.phone;
+        document.getElementById('cfg-instagram').value = config.instagram || '';
+        
+        document.getElementById('qrcode').innerHTML = '';
+        new QRCode(document.getElementById("qrcode"), { text: window.location.href, width: 140, height: 140 });
+      } else { alert('Contraseña incorrecta (admin123)'); }
+    }
+
+    function saveConfig() {
+      config.title = document.getElementById('cfg-title').value;
+      config.subtitle = document.getElementById('cfg-subtitle').value;
+      config.phone = document.getElementById('cfg-phone').value;
+      config.instagram = document.getElementById('cfg-instagram').value;
+      
+      if(tempBanner) config.banner = tempBanner;
+      if(tempLogo) config.logo = tempLogo;
+
+      localStorage.setItem('hogar_cfg', JSON.stringify(config));
+      init();
+      alert('¡Configuración e Instagram actualizados con éxito!');
+    }
+
+    function addItem() {
+      const title = document.getElementById('new-item-title').value;
+      const badge = document.getElementById('new-item-badge').value || 'Servicio';
+      const price = document.getElementById('new-item-price').value;
+      const desc = document.getElementById('new-item-desc').value;
+      const caption = document.getElementById('new-item-caption').value;
+
+      if(!title || !price || !tempItemImg) { alert('Completá título, precio y seleccioná una foto desde tu celular.'); return; }
+
+      items.push({ id: Date.now(), title, price, desc, caption, badge, img: tempItemImg });
+      localStorage.setItem('hogar_items', JSON.stringify(items));
+      renderItems();
+      alert('¡Servicio publicado correctamente!');
+    }
+
+    init();
+  </script>
+</body>
+</html>

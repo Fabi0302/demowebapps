@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title id="page-title">INMOBILIARIA & USADOS - MY FACTORY APPS AR</title>
+
+  <!-- PWA Manifest & Meta -->
+  <link rel="manifest" href="data:application/json,{%22name%22:%22InmobiliariaUsadosPWA%22,%22short_name%22:%22InmueblesPWA%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%230b0f19%22,%22theme_color%22:%22%232563eb%22}">
+  <meta name="theme-color" content="#2563eb">
+
+  <!-- Fuentes & Librería QR -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: rgba(22, 30, 46, 0.88);
+      --card-border: rgba(37, 99, 235, 0.3);
+      --accent: #2563eb;
+      --accent-glow: rgba(37, 99, 235, 0.4);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --danger: #ef4444;
+      --success: #10b981;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 100px; min-height: 100vh; }
+
+    /* Header Banner */
+    .hero { position: relative; width: 100%; height: 220px; overflow: hidden; background: #1a2234; border-bottom: 2px solid var(--accent); }
+    .hero-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.65); }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, var(--bg) 15%, transparent 85%); }
+
+    .profile-header { position: relative; margin-top: -60px; padding: 0 20px; text-align: center; z-index: 10; }
+    .avatar-wrap { position: relative; display: inline-block; }
+    .avatar { width: 105px; height: 105px; border-radius: 22px; object-fit: cover; border: 3px solid var(--accent); box-shadow: 0 0 20px var(--accent-glow); background: #1e293b; }
+
+    h1 { font-size: 1.7rem; font-weight: 800; margin-top: 10px; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; }
+    .subtitle { font-size: 0.9rem; color: var(--text-muted); margin-top: 2px; }
+
+    .social-bar { display: flex; justify-content: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+    .social-btn {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 9px 18px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+    .social-btn.primary {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    /* Layout & Cards */
+    .container { padding: 20px 16px; max-width: 600px; margin: 0 auto; }
+    .section-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; color: var(--accent); border-left: 3px solid var(--accent); padding-left: 10px; }
+
+    .grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .card { background: var(--card-bg); border-radius: 18px; border: 1px solid var(--card-border); overflow: hidden; backdrop-filter: blur(12px); }
+    .card-img-wrap { position: relative; width: 100%; height: 210px; background: #1e293b; }
+    .card-img { width: 100%; height: 100%; object-fit: cover; }
+    .badge { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); border: 1px solid var(--accent); color: var(--accent); font-size: 0.72rem; font-weight: 800; padding: 4px 10px; border-radius: 12px; text-transform: uppercase; }
+
+    .card-body { padding: 16px; }
+    .card-title { font-size: 1.2rem; font-weight: 800; color: #fff; }
+    .card-desc { font-size: 0.88rem; color: var(--text-muted); margin: 6px 0 12px; line-height: 1.4; white-space: pre-line; }
+    .card-photo-caption { font-size: 0.82rem; font-style: italic; color: #bfdbfe; background: rgba(37, 99, 235, 0.12); border-left: 2px solid var(--accent); padding: 6px 10px; border-radius: 4px; margin-bottom: 12px; }
+
+    .card-footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .price { font-size: 1.35rem; font-weight: 900; color: var(--accent); }
+
+    .item-ig-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #38bdf8;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-decoration: none;
+      background: rgba(56, 189, 248, 0.1);
+      padding: 6px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .btn { background: var(--accent); color: #fff; border: none; padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 0.88rem; cursor: pointer; box-shadow: 0 0 15px var(--accent-glow); transition: transform 0.2s; }
+    .btn:active { transform: scale(0.96); }
+
+    /* Modales */
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 1000; justify-content: center; align-items: center; padding: 16px; backdrop-filter: blur(8px); }
+    .modal.active { display: flex; }
+    .modal-card { background: #131b2e; border: 1px solid var(--card-border); border-radius: 22px; padding: 22px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
+    .close-btn { float: right; background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
+
+    label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); display: block; margin-top: 12px; margin-bottom: 4px; }
+    input, select, textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: #fff; padding: 12px; border-radius: 10px; font-size: 0.9rem; outline: none; }
+    
+    .admin-trigger { text-align: center; margin-top: 35px; color: var(--text-muted); font-size: 0.8rem; cursor: pointer; text-decoration: underline; }
+    #qrcode { display: flex; justify-content: center; background: #fff; padding: 12px; border-radius: 12px; margin-top: 15px; }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <img id="view-banner" class="hero-img" src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800" alt="Banner Inmobiliaria">
+    <div class="hero-overlay"></div>
+  </div>
+
+  <div class="profile-header">
+    <div class="avatar-wrap">
+      <img id="view-logo" class="avatar" src="https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=400" alt="Logo Inmobiliaria">
+    </div>
+    <h1 id="view-title">PROP & VEHÍCULOS USADOS</h1>
+    <p id="view-subtitle" class="subtitle">Venta, Alquileres, Tasaciones & Usados Seleccionados</p>
+
+    <div class="social-bar">
+      <button class="social-btn primary" onclick="sendWhatsAppDirect()">💬 Consulta WhatsApp</button>
+      <a id="view-ig-link" href="#" target="_blank" class="social-btn">📸 Instagram Principal <span id="view-ig-display"></span></a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="section-title">
+      <span>Propiedades & Oportunidades</span>
+    </div>
+    <div class="grid" id="items-grid"></div>
+
+    <div class="admin-trigger" onclick="openModal('admin-modal')">⚙ Acceso Administración (admin123)</div>
+  </div>
+
+  <!-- Modal Solicitar Consulta / Visita -->
+  <div class="modal" id="action-modal">
+    <div class="modal-card">
+      <button class="close-btn" onclick="closeModal('action-modal')">&times;</button>
+      <h2 id="modal-item-title" style="color: #fff; font-size: 1.25rem;">Solicitar Visita / Consulta</h2>
+      
+      <label>Tu Nombre y Apellido:</label>
+      <input type="text" id="client-name" placeholder="Ej: Carlos Gómez">
+
+      <label>Teléfono de Contacto:</label>
+      <input type="text" id="client-phone" placeholder="Ej: 1123456789">
+
+      <label>Tipo de Interés:</label>
+      <select id="client-intent">
+        <option value="Coordinar Visita Presencial">Coordinar Visita Presencial</option>
+        <option value="Consultar Requisitos / Financiación">Consultar Requisitos / Financiación</option>
+        <option value="Solicitar Tasación / Permuta">Solicitar Tasación / Permuta</option>
+      </select>
+
+      <label>Mensaje o Días/Horarios de preferencia:</label>
+      <textarea id="client-notes" rows="3" placeholder="Ej: Quisiera ver la propiedad este sábado por la mañana."></textarea>
+
+      <button class="btn" style="width: 100%; margin-top: 20px;" onclick="submitOrder()">Enviar Consulta por WhatsApp</button>
+    </div>
+  </div>
+
+  <!-- Modal Admin -->
+  <div class="modal" id="admin-modal">
+    <div class="modal-card">
+      <button class="close-btn" onclick="closeModal('admin-modal')">&times;</button>
+      <h2>Panel Admin Inmobiliaria & Usados</h2>
+      
+      <div id="admin-login-sec">
+        <label>Clave Admin (admin123):</label>
+        <input type="password" id="admin-pass">
+        <button class="btn" style="width: 100%; margin-top: 12px;" onclick="loginAdmin()">Ingresar</button>
+      </div>
+
+      <div id="admin-panel-sec" style="display: none;">
+        <label>Nombre de la Firma / Inmobiliaria:</label>
+        <input type="text" id="cfg-title">
+
+        <label>Subtítulo / Especialidad:</label>
+        <input type="text" id="cfg-subtitle">
+
+        <label>WhatsApp Contacto (Sin +):</label>
+        <input type="text" id="cfg-phone">
+
+        <label>📸 Instagram General (Usuario o Link completo):</label>
+        <input type="text" id="cfg-instagram" placeholder="Ej: mi_inmobiliaria o https://instagram.com/mi_inmobiliaria">
+
+        <label>📷 Foto de Portada Banner (Galería Celular):</label>
+        <input type="file" id="cfg-file-banner" accept="image/*">
+
+        <label>📷 Foto Perfil / Logo (Galería Celular):</label>
+        <input type="file" id="cfg-file-logo" accept="image/*">
+
+        <button class="btn" style="width:100%; margin-top:15px;" onclick="saveConfig()">Guardar Configuración General</button>
+
+        <hr style="margin: 20px 0; border-color: var(--card-border);">
+        <h3>Publicar Inmueble / Vehículo (Galería)</h3>
+        
+        <label>Título de la Publicación:</label>
+        <input type="text" id="new-item-title" placeholder="Ej: Casa 3 Ambientes con Jardín">
+        
+        <label>Etiqueta / Operación:</label>
+        <input type="text" id="new-item-badge" placeholder="Ej: Venta | Alquiler | Oportunidad">
+
+        <label>Precio / Valor ($ USD o ARS):</label>
+        <input type="text" id="new-item-price" placeholder="Ej: USD 85.000 o $450.000">
+
+        <label>📸 Instagram de esta publicación (Opcional):</label>
+        <input type="text" id="new-item-ig" placeholder="Ej: @propiedad_tour o https://instagram.com/p/xxx">
+        
+        <label>Descripción / Características principales:</label>
+        <textarea id="new-item-desc" rows="3" placeholder="Ubicación, metros cuadrados, habitaciones, extras..."></textarea>
+        
+        <label>✍️ Pie de foto explicativo / Estado:</label>
+        <input type="text" id="new-item-caption" placeholder="Ej: *Apta crédito bancario. Expensas bajas.*">
+
+        <label>📷 Foto Principal (Galería Celular):</label>
+        <input type="file" id="new-item-file" accept="image/*">
+
+        <button class="btn" style="width:100%; margin-top:15px; background:var(--success); color:#fff;" onclick="addItem()">Publicar Inmueble / Vehículo</button>
+
+        <div id="qrcode"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let config = JSON.parse(localStorage.getItem('inmo_cfg')) || {
+      title: 'PROP & VEHÍCULOS USADOS',
+      subtitle: 'Venta, Alquileres, Tasaciones & Usados Seleccionados',
+      phone: '5491100000000',
+      instagram: '@inmobiliaria.demo',
+      banner: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800',
+      logo: 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=400'
+    };
+
+    let items = JSON.parse(localStorage.getItem('inmo_items')) || [
+      { 
+        id: 1, 
+        title: 'Departamento 2 Ambientes c/ Balcón', 
+        price: 'USD 62.000', 
+        desc: 'Cocina integrada, dormitorio con placard, baño completo. Excelente luz natural.', 
+        caption: '🏢 Bajas expensas. Excelente zona comercial y colectivos.',
+        badge: 'Venta', 
+        ig: 'https://instagram.com',
+        img: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=500' 
+      },
+      { 
+        id: 2, 
+        title: 'Pickup Toyota Hilux 2.8 SRV 4x4', 
+        price: 'USD 28.500', 
+        desc: 'Año 2021 | 65.000 KM | Service oficiales al día. Impecable estado.', 
+        caption: '🚗 Aceptamos permuta de menor valor en parte de pago.',
+        badge: 'Usado Seleccionado', 
+        ig: 'https://instagram.com',
+        img: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=500' 
+      }
+    ];
+
+    let selectedItem = null;
+    let tempBanner = "", tempLogo = "", tempItemImg = "";
+
+    function formatIgUrl(val) {
+      if(!val || val.trim() === '') return '';
+      let clean = val.trim();
+      if(!clean.startsWith('http')) {
+        clean = `https://instagram.com/${clean.replace('@', '')}`;
+      }
+      return clean;
+    }
+
+    function init() {
+      document.getElementById('view-title').innerText = config.title;
+      document.getElementById('view-subtitle').innerText = config.subtitle;
+      document.getElementById('view-banner').src = config.banner;
+      document.getElementById('view-logo').src = config.logo;
+      document.getElementById('page-title').innerText = `${config.title} - Inmobiliaria PWA`;
+      
+      // Ajuste de Instagram Principal
+      let igVal = config.instagram || '';
+      if(igVal.trim() !== '') {
+        let handle = igVal.replace('https://instagram.com/', '').replace('http://instagram.com/', '').replace('@', '').replace('/', '');
+        document.getElementById('view-ig-display').innerText = `@${handle}`;
+        document.getElementById('view-ig-link').href = formatIgUrl(igVal);
+        document.getElementById('view-ig-link').style.display = 'inline-flex';
+      } else {
+        document.getElementById('view-ig-link').style.display = 'none';
+      }
+
+      renderItems();
+    }
+
+    function renderItems() {
+      document.getElementById('items-grid').innerHTML = items.map(i => {
+        let itemIgUrl = formatIgUrl(i.ig);
+        return `
+        <div class="card">
+          <div class="card-img-wrap">
+            <span class="badge">${i.badge || 'Oportunidad'}</span>
+            <img src="${i.img}" class="card-img" alt="${i.title}">
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">${i.title}</h3>
+            <p class="card-desc">${i.desc}</p>
+            ${i.caption ? `<div class="card-photo-caption">${i.caption}</div>` : ''}
+            <div class="card-footer">
+              <span class="price">${i.price}</span>
+              ${itemIgUrl ? `<a href="${itemIgUrl}" target="_blank" class="item-ig-link">📸 Ver Foto / Reels</a>` : ''}
+              <button class="btn" onclick="openBooking('${i.title}')">Consultar / Visita</button>
+            </div>
+          </div>
+        </div>
+      `}).join('');
+    }
+
+    /* Manejo de Galería Celular */
+    document.getElementById('cfg-file-banner').addEventListener('change', e => readFile(e, res => tempBanner = res));
+    document.getElementById('cfg-file-logo').addEventListener('change', e => readFile(e, res => tempLogo = res));
+    document.getElementById('new-item-file').addEventListener('change', e => readFile(e, res => tempItemImg = res));
+
+    function readFile(e, callback) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = evt => callback(evt.target.result);
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function openBooking(title) {
+      selectedItem = title;
+      document.getElementById('modal-item-title').innerText = title;
+      openModal('action-modal');
+    }
+
+    function sendWhatsAppDirect() {
+      const phone = config.phone.replace(/[^0-9]/g, '');
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent('¡Hola! Quisiera realizar una consulta general sobre sus propiedades y vehículos disponibles.')}`, '_blank');
+    }
+
+    function submitOrder() {
+      const name = document.getElementById('client-name').value;
+      const phone = document.getElementById('client-phone').value;
+      const intent = document.getElementById('client-intent').value;
+      const notes = document.getElementById('client-notes').value;
+      const targetPhone = config.phone.replace(/[^0-9]/g, '');
+
+      if (!name) { alert('Completá tu nombre y apellido.'); return; }
+
+      let msg = `Hola *${config.title}*!\n\n🏡 *Consulta por Publicación:* ${selectedItem}\n👤 *Cliente:* ${name}\n📞 *Teléfono:* ${phone || 'No especificado'}\n🎯 *Motivo:* ${intent}`;
+      if(notes.trim() !== '') msg += `\n📝 *Detalles:* ${notes.trim()}`;
+
+      closeModal('action-modal');
+      window.open(`https://wa.me/${targetPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    function loginAdmin() {
+      if(document.getElementById('admin-pass').value === 'admin123') {
+        document.getElementById('admin-login-sec').style.display = 'none';
+        document.getElementById('admin-panel-sec').style.display = 'block';
+        document.getElementById('cfg-title').value = config.title;
+        document.getElementById('cfg-subtitle').value = config.subtitle;
+        document.getElementById('cfg-phone').value = config.phone;
+        document.getElementById('cfg-instagram').value = config.instagram || '';
+        
+        document.getElementById('qrcode').innerHTML = '';
+        new QRCode(document.getElementById("qrcode"), { text: window.location.href, width: 140, height: 140 });
+      } else { alert('Clave incorrecta (admin123)'); }
+    }
+
+    function saveConfig() {
+      config.title = document.getElementById('cfg-title').value;
+      config.subtitle = document.getElementById('cfg-subtitle').value;
+      config.phone = document.getElementById('cfg-phone').value;
+      config.instagram = document.getElementById('cfg-instagram').value;
+      
+      if(tempBanner) config.banner = tempBanner;
+      if(tempLogo) config.logo = tempLogo;
+
+      localStorage.setItem('inmo_cfg', JSON.stringify(config));
+      init();
+      alert('Configuración e Instagram Principal guardados exitosamente.');
+    }
+
+    function addItem() {
+      const title = document.getElementById('new-item-title').value;
+      const badge = document.getElementById('new-item-badge').value || 'Oportunidad';
+      const price = document.getElementById('new-item-price').value;
+      const ig = document.getElementById('new-item-ig').value;
+      const desc = document.getElementById('new-item-desc').value;
+      const caption = document.getElementById('new-item-caption').value;
+
+      if(!title || !price || !tempItemImg) { alert('Completá título, precio y elegí una foto desde tu celular.'); return; }
+
+      items.push({ id: Date.now(), title, price, desc, caption, badge, ig, img: tempItemImg });
+      localStorage.setItem('inmo_items', JSON.stringify(items));
+      renderItems();
+      alert('¡Inmueble / Vehículo publicado con éxito!');
+    }
+
+    init();
+  </script>
+</body>
+</html>

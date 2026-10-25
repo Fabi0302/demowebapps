@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Estética & Spa - MY FACTORY APPS AR</title>
+
+  <!-- PWA Manifest & Meta -->
+  <link rel="manifest" href="data:application/json,{%22name%22:%22EsteticaSpaPWA%22,%22short_name%22:%22Spa%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%230b0f19%22,%22theme_color%22:%22%23ec4899%22}">
+  <meta name="theme-color" content="#ec4899">
+
+  <!-- Fuentes & Librería QR -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: rgba(22, 30, 46, 0.8);
+      --card-border: rgba(236, 72, 153, 0.25);
+      --accent: #ec4899;
+      --accent-glow: rgba(236, 72, 153, 0.4);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --danger: #ef4444;
+      --success: #10b981;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 90px; min-height: 100vh; }
+
+    /* Header Banner */
+    .hero { position: relative; width: 100%; height: 220px; overflow: hidden; background: #1a2234; }
+    .hero-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6); }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, var(--bg) 10%, transparent 90%); }
+
+    .profile-header { position: relative; margin-top: -60px; padding: 0 20px; text-align: center; z-index: 10; }
+    .avatar-wrap { position: relative; display: inline-block; }
+    .avatar { width: 105px; height: 105px; border-radius: 22px; object-fit: cover; border: 3px solid var(--accent); box-shadow: 0 0 20px var(--accent-glow); background: #1e293b; }
+
+    h1 { font-size: 1.7rem; font-weight: 800; margin-top: 10px; color: #fff; }
+    .subtitle { font-size: 0.9rem; color: var(--text-muted); margin-top: 2px; }
+
+    .social-bar { display: flex; justify-content: center; gap: 10px; margin-top: 14px; }
+    .social-btn { background: rgba(255,255,255,0.06); border: 1px solid var(--card-border); color: var(--text); padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+    .social-btn.primary { background: var(--accent); color: #fff; border: none; font-weight: 700; box-shadow: 0 0 15px var(--accent-glow); }
+
+    /* Layout & Cards */
+    .container { padding: 20px 16px; max-width: 600px; margin: 0 auto; }
+    .section-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+
+    .grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .card { background: var(--card-bg); border-radius: 18px; border: 1px solid var(--card-border); overflow: hidden; backdrop-filter: blur(12px); }
+    .card-img-wrap { position: relative; width: 100%; height: 180px; background: #1e293b; }
+    .card-img { width: 100%; height: 100%; object-fit: cover; }
+    .badge { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); border: 1px solid var(--accent); color: var(--accent); font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 12px; text-transform: uppercase; }
+
+    .card-body { padding: 16px; }
+    .card-title { font-size: 1.15rem; font-weight: 700; color: #fff; }
+    .card-desc { font-size: 0.88rem; color: var(--text-muted); margin: 6px 0 12px; line-height: 1.4; white-space: pre-line; }
+    .card-photo-caption { font-size: 0.8rem; font-style: italic; color: #fbcfe8; background: rgba(236, 72, 153, 0.1); border-left: 2px solid var(--accent); padding: 6px 10px; border-radius: 4px; margin-bottom: 12px; }
+
+    .card-footer { display: flex; justify-content: space-between; align-items: center; }
+    .price { font-size: 1.3rem; font-weight: 800; color: var(--accent); }
+
+    .btn { background: var(--accent); color: #fff; border: none; padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 0.88rem; cursor: pointer; box-shadow: 0 0 15px var(--accent-glow); transition: transform 0.2s; }
+    .btn:active { transform: scale(0.96); }
+
+    /* Modales */
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; padding: 16px; backdrop-filter: blur(8px); }
+    .modal.active { display: flex; }
+    .modal-card { background: #131b2e; border: 1px solid var(--card-border); border-radius: 22px; padding: 22px; width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto; }
+    .close-btn { float: right; background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
+
+    label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); display: block; margin-top: 12px; margin-bottom: 4px; }
+    input, select, textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: #fff; padding: 12px; border-radius: 10px; font-size: 0.9rem; outline: none; }
+    
+    .admin-trigger { text-align: center; margin-top: 35px; color: var(--text-muted); font-size: 0.8rem; cursor: pointer; text-decoration: underline; }
+    #qrcode { display: flex; justify-content: center; background: #fff; padding: 12px; border-radius: 12px; margin-top: 15px; }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <img id="view-banner" class="hero-img" src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800" alt="Banner Spa">
+    <div class="hero-overlay"></div>
+  </div>
+
+  <div class="profile-header">
+    <div class="avatar-wrap">
+      <img id="view-logo" class="avatar" src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=400" alt="Logo Spa">
+    </div>
+    <h1 id="view-title">AURA ESTÉTICA & SPA</h1>
+    <p id="view-subtitle" class="subtitle">Tratamientos Corporales, Faciales & Relax</p>
+
+    <div class="social-bar">
+      <a id="view-wa-link" href="#" target="_blank" class="social-btn primary">💬 WhatsApp Turnos</a>
+      <a id="view-ig-link" href="#" target="_blank" class="social-btn">📸 Instagram</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="section-title">
+      <span>Tratamientos & Experiencias Spa</span>
+    </div>
+    <div class="grid" id="items-grid"></div>
+
+    <div class="admin-trigger" onclick="openModal('admin-modal')">⚙ Acceso Administración (Cargar fotos cel)</div>
+  </div>
+
+  <!-- Modal Solicitar Turno / Servicio -->
+  <div class="modal" id="action-modal">
+    <div class="modal-card">
+      <button class="close-btn" onclick="closeModal('action-modal')">&times;</button>
+      <h2 id="modal-item-title" style="color: #fff; font-size: 1.25rem;">Agendar Sesión</h2>
+      
+      <label>Nombre y Apellido:</label>
+      <input type="text" id="client-name" placeholder="Ej: Camila Silva">
+
+      <label>Teléfono de Contacto:</label>
+      <input type="text" id="client-phone" placeholder="Ej: 1123456789">
+
+      <label>Fecha Preferida:</label>
+      <input type="date" id="client-date">
+
+      <label>Horario o Preferencia (Mañana/Tarde):</label>
+      <input type="text" id="client-time" placeholder="Ej: Por la tarde a partir de las 16 hs">
+
+      <button class="btn" style="width: 100%; margin-top: 20px;" onclick="submitOrder()">Agendar por WhatsApp</button>
+    </div>
+  </div>
+
+  <!-- Modal Admin -->
+  <div class="modal" id="admin-modal">
+    <div class="modal-card">
+      <button class="close-btn" onclick="closeModal('admin-modal')">&times;</button>
+      <h2>Panel Admin Estética & Spa</h2>
+      
+      <div id="admin-login-sec">
+        <label>Clave Admin (admin123):</label>
+        <input type="password" id="admin-pass">
+        <button class="btn" style="width: 100%; margin-top: 12px;" onclick="loginAdmin()">Ingresar</button>
+      </div>
+
+      <div id="admin-panel-sec" style="display: none;">
+        <label>Nombre del Centro / Spa:</label>
+        <input type="text" id="cfg-title">
+
+        <label>Subtítulo / Especialidades:</label>
+        <input type="text" id="cfg-subtitle">
+
+        <label>WhatsApp Turnos (Sin +):</label>
+        <input type="text" id="cfg-phone">
+
+        <label>📸 Instagram (Usuario o Link completo):</label>
+        <input type="text" id="cfg-instagram" placeholder="Ej: mi_estetica u https://instagram.com/mi_estetica">
+
+        <label>📷 Foto de Portada (Galería Celular):</label>
+        <input type="file" id="cfg-file-banner" accept="image/*">
+
+        <label>📷 Foto Perfil / Logo (Galería Celular):</label>
+        <input type="file" id="cfg-file-logo" accept="image/*">
+
+        <button class="btn" style="width:100%; margin-top:15px;" onclick="saveConfig()">Guardar Configuración General</button>
+
+        <hr style="margin: 20px 0; border-color: var(--card-border);">
+        <h3>Agregar Tratamiento / Servicio (Galería)</h3>
+        
+        <label>Nombre del Tratamiento:</label>
+        <input type="text" id="new-item-title">
+        
+        <label>Valor / Arancel ($):</label>
+        <input type="number" id="new-item-price">
+        
+        <label>Descripción / Qué incluye:</label>
+        <textarea id="new-item-desc" rows="3" placeholder="Detalles de la sesión..."></textarea>
+        
+        <label>✍️ Texto explicativo / Pie de Foto:</label>
+        <input type="text" id="new-item-caption" placeholder="Ej: *Duración: 60 min. Incluye aromaterapia y té de cortesía*">
+
+        <label>📷 Foto del Tratamiento (Galería Celular):</label>
+        <input type="file" id="new-item-file" accept="image/*">
+
+        <button class="btn" style="width:100%; margin-top:15px; background:var(--success); color:#fff;" onclick="addItem()">Publicar Tratamiento</button>
+
+        <div id="qrcode"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let config = JSON.parse(localStorage.getItem('spa_cfg')) || {
+      title: 'AURA ESTÉTICA & SPA',
+      subtitle: 'Tratamientos Corporales, Faciales & Relax',
+      phone: '5491100000000',
+      instagram: 'https://instagram.com',
+      banner: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800',
+      logo: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=400'
+    };
+
+    let items = JSON.parse(localStorage.getItem('spa_items')) || [
+      { 
+        id: 1, 
+        title: 'Masaje Descontracturante + Aromaterapia', 
+        price: 16000, 
+        desc: 'Sesión intensiva para aliviar tensiones musculares en espalda y cuello con aceites esenciales.', 
+        caption: '💆‍♀️ Duración 50 minutos. Incluye té relajante post-sesión.',
+        badge: 'Popular', 
+        img: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=500' 
+      },
+      { 
+        id: 2, 
+        title: 'Circuito Spa Day Relajación Total', 
+        price: 35000, 
+        desc: 'Punta de diamante facial, masaje de piedras calientes y reflexología podal.', 
+        caption: '✨ Experiencia completa de 2 horas de desconexión absoluta.',
+        badge: 'Premium', 
+        img: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=500' 
+      }
+    ];
+
+    let selectedItem = null;
+    let tempBanner = "", tempLogo = "", tempItemImg = "";
+
+    function init() {
+      document.getElementById('view-title').innerText = config.title;
+      document.getElementById('view-subtitle').innerText = config.subtitle;
+      document.getElementById('view-banner').src = config.banner;
+      document.getElementById('view-logo').src = config.logo;
+      document.getElementById('view-wa-link').href = `https://wa.me/${config.phone}`;
+      
+      // Formatear enlace de Instagram
+      let igUrl = config.instagram || '#';
+      if(igUrl !== '#' && !igUrl.startsWith('http')) {
+        igUrl = `https://instagram.com/${igUrl.replace('@', '')}`;
+      }
+      document.getElementById('view-ig-link').href = igUrl;
+
+      renderItems();
+    }
+
+    function renderItems() {
+      document.getElementById('items-grid').innerHTML = items.map(i => `
+        <div class="card">
+          <div class="card-img-wrap">
+            <span class="badge">${i.badge || 'Spa'}</span>
+            <img src="${i.img}" class="card-img" alt="${i.title}">
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">${i.title}</h3>
+            <p class="card-desc">${i.desc}</p>
+            ${i.caption ? `<div class="card-photo-caption">${i.caption}</div>` : ''}
+            <div class="card-footer">
+              <span class="price">$${i.price}</span>
+              <button class="btn" onclick="openBooking('${i.title}')">Agendar Turno</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    /* Manejo de Galería */
+    document.getElementById('cfg-file-banner').addEventListener('change', e => readFile(e, res => tempBanner = res));
+    document.getElementById('cfg-file-logo').addEventListener('change', e => readFile(e, res => tempLogo = res));
+    document.getElementById('new-item-file').addEventListener('change', e => readFile(e, res => tempItemImg = res));
+
+    function readFile(e, callback) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = evt => callback(evt.target.result);
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function openBooking(title) {
+      selectedItem = title;
+      document.getElementById('modal-item-title').innerText = title;
+      openModal('action-modal');
+    }
+
+    function submitOrder() {
+      const name = document.getElementById('client-name').value;
+      const phone = document.getElementById('client-phone').value;
+      const date = document.getElementById('client-date').value;
+      const time = document.getElementById('client-time').value;
+
+      if (!name) { alert('Completá tu nombre y apellido.'); return; }
+
+      let msg = `Hola *${config.title}*!\n\n🌸 *Reserva de Tratamiento:* ${selectedItem}\n👤 *Cliente:* ${name}\n📞 *Teléfono:* ${phone || 'No especificado'}\n📅 *Fecha preferida:* ${date || 'A coordinar'}\n⏰ *Preferencia horaria:* ${time || 'A coordinar'}`;
+      closeModal('action-modal');
+      window.open(`https://wa.me/${config.phone}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    function loginAdmin() {
+      if(document.getElementById('admin-pass').value === 'admin123') {
+        document.getElementById('admin-login-sec').style.display = 'none';
+        document.getElementById('admin-panel-sec').style.display = 'block';
+        document.getElementById('cfg-title').value = config.title;
+        document.getElementById('cfg-subtitle').value = config.subtitle;
+        document.getElementById('cfg-phone').value = config.phone;
+        document.getElementById('cfg-instagram').value = config.instagram || '';
+        
+        document.getElementById('qrcode').innerHTML = '';
+        new QRCode(document.getElementById("qrcode"), { text: window.location.href, width: 140, height: 140 });
+      } else { alert('Clave incorrecta'); }
+    }
+
+    function saveConfig() {
+      config.title = document.getElementById('cfg-title').value;
+      config.subtitle = document.getElementById('cfg-subtitle').value;
+      config.phone = document.getElementById('cfg-phone').value;
+      config.instagram = document.getElementById('cfg-instagram').value;
+      
+      if(tempBanner) config.banner = tempBanner;
+      if(tempLogo) config.logo = tempLogo;
+
+      localStorage.setItem('spa_cfg', JSON.stringify(config));
+      init();
+      alert('Configuración e Instagram guardados.');
+    }
+
+    function addItem() {
+      const title = document.getElementById('new-item-title').value;
+      const price = document.getElementById('new-item-price').value;
+      const desc = document.getElementById('new-item-desc').value;
+      const caption = document.getElementById('new-item-caption').value;
+
+      if(!title || !price || !tempItemImg) { alert('Completá título, precio y elegí una foto de tu celular.'); return; }
+
+      items.push({ id: Date.now(), title, price, desc, caption, badge: 'Spa', img: tempItemImg });
+      localStorage.setItem('spa_items', JSON.stringify(items));
+      renderItems();
+      alert('¡Tratamiento publicado!');
+    }
+
+    init();
+  </script>
+</body>
+</html>

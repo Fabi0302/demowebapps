@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title id="page-title">MY FACTORY BARBER - Old School Barber Shop</title>
+
+  <!-- PWA Manifest & Meta -->
+  <link rel="manifest" href="data:application/json,{%22name%22:%22OldSchoolBarberPWA%22,%22short_name%22:%22BarberPWA%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%230a0806%22,%22theme_color%22:%22%23d4af37%22}">
+  <meta name="theme-color" content="#d4af37">
+
+  <!-- Fuentes Old School Tradicionales & Librería QR -->
+  <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Cinzel:wght@600;700;800;900&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #0a0806;
+      --card-bg: rgba(20, 16, 12, 0.88);
+      --card-border: rgba(212, 175, 55, 0.35);
+      --accent: #d4af37; /* Oro Envejecido / Gold */
+      --accent-glow: rgba(212, 175, 55, 0.4);
+      --text: #f4efe6;
+      --text-muted: #a39988;
+      --danger: #ef4444;
+      --success: #10b981;
+      --font-gothic: 'UnifrakturMaguntia', cursive;
+      --font-vintage: 'Cinzel', serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+    
+    body {
+      background-color: var(--bg);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 120px;
+    }
+
+    /* Hero Banner Old School */
+    .hero { position: relative; width: 100%; height: 220px; overflow: hidden; background: #14100c; border-bottom: 2px solid var(--accent); }
+    .hero-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.55) sepia(0.2); }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, var(--bg) 15%, transparent 85%); }
+
+    .profile-header { position: relative; margin-top: -60px; padding: 0 20px; text-align: center; z-index: 10; }
+    .avatar-wrap { position: relative; display: inline-block; }
+    .avatar { width: 110px; height: 110px; border-radius: 20px; object-fit: cover; border: 3px solid var(--accent); box-shadow: 0 0 25px var(--accent-glow); background: #14100c; }
+
+    /* Letras Old School / Góticas */
+    h1.old-school-title { 
+      font-family: var(--font-gothic); 
+      font-size: 2.5rem; 
+      margin-top: 8px; 
+      color: var(--accent); 
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+      letter-spacing: 1px;
+    }
+    .subtitle { font-family: var(--font-vintage); font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; }
+
+    /* Barra Social */
+    .social-bar { display: flex; justify-content: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+    .social-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-family: var(--font-vintage);
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .social-btn.primary {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .container { max-width: 600px; margin: 0 auto; padding: 1.2rem; }
+
+    .section-title {
+      font-family: var(--font-vintage);
+      font-size: 1.1rem;
+      color: var(--accent);
+      margin: 1.8rem 0 0.9rem 0;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      border-left: 3px solid var(--accent);
+      padding-left: 10px;
+      font-weight: 800;
+    }
+
+    /* Cards Servicios Old School */
+    .services-grid { display: grid; gap: 1.2rem; }
+    .service-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      position: relative;
+      backdrop-filter: blur(8px);
+    }
+
+    .service-card.selected {
+      border-color: var(--accent);
+      box-shadow: 0 0 20px var(--accent-glow);
+      background: rgba(212, 175, 55, 0.12);
+    }
+
+    .service-checkbox {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: 2px solid var(--accent);
+      background: rgba(10, 8, 6, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000;
+      font-weight: bold;
+      font-size: 0.9rem;
+      z-index: 5;
+    }
+
+    .service-card.selected .service-checkbox { background: var(--accent); }
+
+    .service-img { width: 100%; height: 185px; object-fit: cover; border-bottom: 1px solid var(--card-border); filter: sepia(0.15); }
+    .service-content { padding: 1rem; }
+    .service-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+    .service-info h3 { font-family: var(--font-vintage); font-size: 1.15rem; color: #fff; font-weight: 800; letter-spacing: 0.5px; }
+    .service-info p { color: var(--text-muted); font-size: 0.88rem; margin-top: 3px; line-height: 1.4; }
+    .price { font-family: var(--font-vintage); font-weight: 900; color: var(--accent); font-size: 1.3rem; white-space: nowrap; }
+
+    .card-photo-caption {
+      font-size: 0.8rem;
+      font-style: italic;
+      color: #fef08a;
+      background: rgba(212, 175, 55, 0.1);
+      border-left: 2px solid var(--accent);
+      padding: 6px 10px;
+      border-radius: 4px;
+      margin-top: 8px;
+    }
+
+    /* Staff Barbers */
+    .barbers-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; }
+    .barber-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 0.9rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .barber-card.selected { border-color: var(--accent); background: rgba(212, 175, 55, 0.18); }
+    .barber-avatar { 
+      width: 52px; height: 52px; border-radius: 10px; background: #14100c; 
+      margin: 0 auto 8px auto; display: flex; align-items: center; justify-content: center; 
+      font-family: var(--font-gothic); color: var(--accent); border: 1px solid var(--accent); font-size: 1.5rem;
+    }
+
+    /* Formularios */
+    .input-group { margin-bottom: 1rem; }
+    .input-group label { display: block; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 5px; font-weight: 600; font-family: var(--font-vintage); letter-spacing: 0.5px; }
+    .input-group input, .input-group select, .input-group textarea {
+      width: 100%; padding: 0.85rem; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border);
+      border-radius: 8px; color: var(--text); outline: none; font-size: 0.95rem;
+    }
+
+    /* Bottom Bar */
+    .bottom-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(14, 11, 8, 0.96); border-top: 1px solid var(--card-border);
+      padding: 1rem; display: flex; justify-content: space-between; align-items: center;
+      max-width: 600px; margin: 0 auto; backdrop-filter: blur(12px); z-index: 99;
+    }
+
+    .btn {
+      background: var(--accent); color: #000; font-family: var(--font-vintage); font-weight: 900; border: none;
+      padding: 0.9rem 1.5rem; border-radius: 8px; cursor: pointer;
+      text-transform: uppercase; letter-spacing: 1px; transition: background 0.2s; font-size: 0.88rem;
+    }
+
+    /* Modales */
+    .modal {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.9); z-index: 200; padding: 2rem 1rem; overflow-y: auto; backdrop-filter: blur(6px);
+    }
+    .modal-content {
+      background: #14100c; border: 1px solid var(--accent);
+      border-radius: 16px; max-width: 550px; margin: 0 auto; padding: 1.5rem;
+    }
+
+    .admin-card-edit {
+      border: 1px solid var(--card-border); padding: 12px; border-radius: 10px;
+      margin-bottom: 12px; background: rgba(0,0,0,0.3);
+    }
+
+    #qrcode { display: flex; justify-content: center; background: #fff; padding: 10px; border-radius: 10px; margin: 10px auto; }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <img id="view-banner" class="hero-img" src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800" alt="Banner Barbería">
+    <div class="hero-overlay"></div>
+  </div>
+
+  <div class="profile-header">
+    <div class="avatar-wrap">
+      <img id="view-logo" class="avatar" src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400" alt="Logo Barbería">
+    </div>
+    <h1 id="shop-title" class="old-school-title">My Factory Barber</h1>
+    <p id="shop-slogan" class="subtitle">Estilo Tradicional, Navaja & Corte Urbano</p>
+    
+    <div class="social-bar">
+      <button class="social-btn primary" onclick="sendWhatsAppDirect()">💬 WhatsApp Directo</button>
+      <a id="shop-ig-link" href="#" target="_blank" class="social-btn">📸 Instagram <span id="shop-ig-display"></span></a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="section-title">1. Elegí tus Servicios</div>
+    <div class="services-grid" id="services-container"></div>
+
+    <div class="section-title">2. Seleccioná Barbero</div>
+    <div class="barbers-grid" id="barbers-container"></div>
+
+    <div class="section-title">3. Reserva tu Turno</div>
+    <div class="input-group">
+      <label>Fecha del turno:</label>
+      <input type="date" id="booking-date">
+    </div>
+    <div class="input-group">
+      <label>Horarios disponibles:</label>
+      <select id="booking-time">
+        <option value="10:00">10:00 HS</option>
+        <option value="11:30">11:30 HS</option>
+        <option value="13:00">13:00 HS</option>
+        <option value="15:00">15:00 HS</option>
+        <option value="16:30">16:30 HS</option>
+        <option value="18:00">18:00 HS</option>
+        <option value="19:30">19:30 HS</option>
+      </select>
+    </div>
+
+    <div class="input-group">
+      <label>Tu Nombre completo:</label>
+      <input type="text" id="client-name" placeholder="Ej: Mateo Gómez">
+    </div>
+
+    <div class="input-group">
+      <label>Notas o Aclaraciones (Opcional):</label>
+      <textarea id="client-notes" rows="2" placeholder="Ej: Corte clásico con navaja y barba toalla caliente."></textarea>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <div>
+      <span style="color: var(--text-muted); font-size: 0.8rem; display:block;" id="selected-count-label">0 Servicios:</span>
+      <span id="total-price" class="price" style="font-size: 1.3rem;">$0</span>
+    </div>
+    <button class="btn" onclick="sendWhatsAppOrder()">Solicitar Turno</button>
+  </div>
+
+  <div style="text-align: center; margin: 2.5rem 0;">
+    <button onclick="openAdmin()" style="background:none; border:none; color:var(--text-muted); font-size:0.8rem; cursor:pointer; text-decoration:underline;">🔒 Panel Administración (admin123)</button>
+  </div>
+
+  <!-- Modal Admin -->
+  <div class="modal" id="admin-modal">
+    <div class="modal-content">
+      <h2 style="color:var(--accent); margin-bottom:1rem; font-family:var(--font-vintage);">Panel Administrador Barbería</h2>
+      
+      <div id="admin-login-sec">
+        <label>Clave Admin (admin123):</label>
+        <input type="password" id="admin-pass" style="width: 100%; padding: 12px; margin-top: 6px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: #fff; border-radius: 8px;">
+        <button class="btn" style="width: 100%; margin-top: 12px;" onclick="loginAdmin()">Ingresar</button>
+      </div>
+
+      <div id="admin-panel-sec" style="display: none;">
+        <div class="input-group">
+          <label>Nombre de la Barbería / Título:</label>
+          <input type="text" id="admin-title">
+        </div>
+        <div class="input-group">
+          <label>Eslogan o Subtítulo:</label>
+          <input type="text" id="admin-slogan">
+        </div>
+        <div class="input-group">
+          <label>📸 Instagram (Usuario o Link completo):</label>
+          <input type="text" id="admin-ig" placeholder="Ej: mi_barberia o https://instagram.com/mi_barberia">
+        </div>
+        <div class="input-group">
+          <label>Teléfono WhatsApp (receptor sin +):</label>
+          <input type="text" id="admin-phone">
+        </div>
+        
+        <div class="input-group">
+          <label>📷 Foto Portada Banner (Galería Celular):</label>
+          <input type="file" id="admin-file-banner" accept="image/*">
+        </div>
+        
+        <div class="input-group">
+          <label>📷 Foto Perfil Logo (Galería Celular):</label>
+          <input type="file" id="admin-file-logo" accept="image/*">
+        </div>
+
+        <h3 style="color:var(--accent); margin: 1.5rem 0 0.8rem 0; font-size:1rem; font-family:var(--font-vintage);">Editar Staff Barberos:</h3>
+        <div id="admin-barbers-list"></div>
+
+        <h3 style="color:var(--accent); margin: 1.5rem 0 0.8rem 0; font-size:1rem; font-family:var(--font-vintage);">Editar Servicios & Fotos del Menú:</h3>
+        <div id="admin-services-list"></div>
+
+        <button class="btn" style="width: 100%; margin-top: 1rem;" onclick="saveAdminSettings()">Guardar Cambios Barbería</button>
+        
+        <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; text-align: center; margin-top: 1.5rem; border: 1px solid var(--card-border);">
+          <h3 style="color: var(--accent); font-size: 1rem; margin-bottom: 6px; font-family:var(--font-vintage);">🖨️ Código QR Old School</h3>
+          <div id="qrcode"></div>
+        </div>
+
+        <button class="btn" style="width: 100%; margin-top: 1rem; background:#333; color:#fff;" onclick="closeAdmin()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const defaultServices = [
+      { id: 1, name: "Corte Tradicional / Fade", desc: "Corte a tijera o máquina, lavado y peinado pompadour.", caption: "✂️ Incluye toalla caliente y navaja en patillas.", price: 12000, img: "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=600" },
+      { id: 2, name: "Ritual de Barba Old School", desc: "Perfilado con navaja, vapor, toalla caliente y óleos.", caption: "🌿 Bálsamo hidratante y masaje facial relajante.", price: 8000, img: "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600" },
+      { id: 3, name: "Combo Don Imperial", desc: "Corte completo + Barba Ritual + Bebida de cortesía.", caption: "👑 Experiencia completa de barbería clásica.", price: 17000, img: "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=600" }
+    ];
+
+    const defaultStaff = ["Cualquiera", "Lucas", "Nico"];
+    let config = JSON.parse(localStorage.getItem('barber_cfg')) || {
+      title: "My Factory Barber",
+      slogan: "Estilo Tradicional, Navaja & Corte Urbano",
+      ig: "https://instagram.com",
+      phone: "5491100000000",
+      banner: "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800",
+      logo: "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400"
+    };
+
+    let services = JSON.parse(localStorage.getItem('barber_services')) || defaultServices;
+    let staff = JSON.parse(localStorage.getItem('barber_staff')) || defaultStaff;
+
+    let selectedServiceIds = [], selectedStaff = "Cualquiera";
+    let tempBanner = "", tempLogo = "";
+
+    function init() {
+      document.getElementById('shop-title').innerText = config.title;
+      document.getElementById('shop-slogan').innerText = config.slogan;
+      document.getElementById('view-banner').src = config.banner;
+      document.getElementById('view-logo').src = config.logo;
+
+      // Instagram fix
+      let igValue = config.ig || '';
+      if(igValue.trim() !== "") {
+        let cleanIg = igValue.trim();
+        let handle = cleanIg.replace('https://instagram.com/', '').replace('http://instagram.com/', '').replace('@', '').replace('/', '');
+        document.getElementById('shop-ig-display').innerText = `@${handle}`;
+        document.getElementById('shop-ig-link').href = cleanIg.startsWith('http') ? cleanIg : `https://instagram.com/${handle}`;
+        document.getElementById('shop-ig-link').style.display = 'inline-flex';
+      } else {
+        document.getElementById('shop-ig-link').style.display = 'none';
+      }
+
+      document.getElementById('booking-date').valueAsDate = new Date();
+      renderStaff();
+      renderServices();
+      updateTotalPrice();
+    }
+
+    function renderStaff() {
+      const container = document.getElementById('barbers-container');
+      container.innerHTML = '';
+      staff.forEach((sName, idx) => {
+        const isSelected = selectedStaff === sName;
+        const card = document.createElement('div');
+        card.className = `barber-card ${isSelected ? 'selected' : ''}`;
+        card.onclick = () => { selectedStaff = sName; renderStaff(); };
+        card.innerHTML = `<div class="barber-avatar">${idx === 0 ? '💈' : sName.charAt(0).toUpperCase()}</div><span style="font-size:0.85rem; font-weight:700;">${sName}</span>`;
+        container.appendChild(card);
+      });
+    }
+
+    function renderServices() {
+      const container = document.getElementById('services-container');
+      container.innerHTML = '';
+      services.forEach(s => {
+        const isSelected = selectedServiceIds.includes(s.id);
+        const card = document.createElement('div');
+        card.className = `service-card ${isSelected ? 'selected' : ''}`;
+        card.onclick = () => toggleServiceSelection(s.id);
+        card.innerHTML = `
+          <div class="service-checkbox">${isSelected ? '✓' : ''}</div>
+          <img src="${s.img}" alt="${s.name}" class="service-img">
+          <div class="service-content">
+            <div class="service-header-row">
+              <div class="service-info">
+                <h3>${s.name}</h3>
+                <p>${s.desc}</p>
+              </div>
+              <div class="price">$${Number(s.price).toLocaleString()}</div>
+            </div>
+            ${s.caption ? `<div class="card-photo-caption">${s.caption}</div>` : ''}
+          </div>`;
+        container.appendChild(card);
+      });
+    }
+
+    function toggleServiceSelection(id) {
+      if(selectedServiceIds.includes(id)) selectedServiceIds = selectedServiceIds.filter(item => item !== id);
+      else selectedServiceIds.push(id);
+      renderServices();
+      updateTotalPrice();
+    }
+
+    function updateTotalPrice() {
+      const selectedObjList = services.filter(s => selectedServiceIds.includes(s.id));
+      const total = selectedObjList.reduce((acc, curr) => acc + Number(curr.price), 0);
+      document.getElementById('total-price').innerText = `$${total.toLocaleString()}`;
+      document.getElementById('selected-count-label').innerText = `${selectedObjList.length} Servicio(s):`;
+    }
+
+    function sendWhatsAppDirect() {
+      const phone = config.phone.replace(/[^0-9]/g, '');
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent('¡Hola! Quisiera consultar disponibilidades para turnos en la barbería.')}`, '_blank');
+    }
+
+    function sendWhatsAppOrder() {
+      const clientName = document.getElementById('client-name').value;
+      const clientNotes = document.getElementById('client-notes').value;
+      const date = document.getElementById('booking-date').value;
+      const time = document.getElementById('booking-time').value;
+      const phone = config.phone.replace(/[^0-9]/g, '');
+
+      if(selectedServiceIds.length === 0 || !clientName.trim()) {
+        alert("Elegí al menos un servicio e ingresá tu nombre."); return;
+      }
+
+      const selectedObjList = services.filter(s => selectedServiceIds.includes(s.id));
+      const servicesText = selectedObjList.map(s => `• ${s.name} ($${Number(s.price).toLocaleString()})`).join('\n');
+      const total = selectedObjList.reduce((acc, curr) => acc + Number(curr.price), 0);
+
+      let msg = `¡Hola *${config.title}*!\n\n💈 *Turno Barbería Solicitado:*\n${servicesText}\n\n✂️ *Barbero:* ${selectedStaff}\n📅 *Fecha:* ${date}\n⏰ *Hora:* ${time} HS\n👤 *Cliente:* ${clientName}`;
+      if(clientNotes.trim() !== "") msg += `\n📝 *Notas:* ${clientNotes.trim()}`;
+      msg += `\n\n💰 *Total Estimado:* $${total.toLocaleString()}`;
+
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    /* Galería Celular */
+    document.getElementById('admin-file-banner').addEventListener('change', e => readFile(e, res => tempBanner = res));
+    document.getElementById('admin-file-logo').addEventListener('change', e => readFile(e, res => tempLogo = res));
+
+    function readFile(e, callback) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = evt => callback(evt.target.result);
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function openAdmin() {
+      document.getElementById('admin-login-sec').style.display = 'block';
+      document.getElementById('admin-panel-sec').style.display = 'none';
+      document.getElementById('admin-modal').style.display = 'block';
+    }
+
+    function loginAdmin() {
+      if(document.getElementById('admin-pass').value === 'admin123') {
+        document.getElementById('admin-login-sec').style.display = 'none';
+        document.getElementById('admin-panel-sec').style.display = 'block';
+        
+        document.getElementById('admin-title').value = config.title;
+        document.getElementById('admin-slogan').value = config.slogan;
+        document.getElementById('admin-ig').value = config.ig;
+        document.getElementById('admin-phone').value = config.phone;
+
+        renderAdminStaff();
+        renderAdminServices();
+
+        document.getElementById('qrcode').innerHTML = '';
+        new QRCode(document.getElementById("qrcode"), { text: window.location.href, width: 140, height: 140 });
+      } else alert("Clave Incorrecta (admin123)");
+    }
+
+    function renderAdminStaff() {
+      const container = document.getElementById('admin-barbers-list');
+      container.innerHTML = '';
+      staff.forEach((sName, idx) => {
+        container.innerHTML += `<div class="input-group"><label>Barbero ${idx + 1}:</label><input type="text" id="staff-inp-${idx}" value="${sName}"></div>`;
+      });
+    }
+
+    function renderAdminServices() {
+      const container = document.getElementById('admin-services-list');
+      container.innerHTML = '';
+      services.forEach((s, idx) => {
+        container.innerHTML += `
+          <div class="admin-card-edit">
+            <div class="input-group"><label>Servicio:</label><input type="text" id="srv-name-${idx}" value="${s.name}"></div>
+            <div class="input-group"><label>Descripción:</label><input type="text" id="srv-desc-${idx}" value="${s.desc}"></div>
+            <div class="input-group"><label>Pie de foto explicativo:</label><input type="text" id="srv-cap-${idx}" value="${s.caption || ''}"></div>
+            <div class="input-group"><label>Precio ($):</label><input type="number" id="srv-price-${idx}" value="${s.price}"></div>
+            <div class="input-group"><label>📷 Cambiar Foto del Trabajo (Galería):</label><input type="file" id="srv-file-${idx}" accept="image/*"></div>
+          </div>`;
+      });
+    }
+
+    function saveAdminSettings() {
+      config.title = document.getElementById('admin-title').value;
+      config.slogan = document.getElementById('admin-slogan').value;
+      config.ig = document.getElementById('admin-ig').value;
+      config.phone = document.getElementById('admin-phone').value;
+
+      if(tempBanner) config.banner = tempBanner;
+      if(tempLogo) config.logo = tempLogo;
+
+      localStorage.setItem('barber_cfg', JSON.stringify(config));
+
+      staff.forEach((_, idx) => {
+        const inp = document.getElementById(`staff-inp-${idx}`);
+        if(inp) staff[idx] = inp.value;
+      });
+      localStorage.setItem('barber_staff', JSON.stringify(staff));
+
+      let promises = services.map((s, idx) => {
+        return new Promise(resolve => {
+          s.name = document.getElementById(`srv-name-${idx}`).value;
+          s.desc = document.getElementById(`srv-desc-${idx}`).value;
+          s.caption = document.getElementById(`srv-cap-${idx}`).value;
+          s.price = Number(document.getElementById(`srv-price-${idx}`).value);
+
+          const fileInp = document.getElementById(`srv-file-${idx}`);
+          if(fileInp && fileInp.files[0]) {
+            readFile({ target: fileInp }, res => { s.img = res; resolve(); });
+          } else resolve();
+        });
+      });
+
+      Promise.all(promises).then(() => {
+        localStorage.setItem('barber_services', JSON.stringify(services));
+        init();
+        closeAdmin();
+        alert("¡Configuración Old School guardada exitosamente!");
+      });
+    }
+
+    function closeAdmin() { document.getElementById('admin-modal').style.display = 'none'; }
+
+    init();
+  </script>
+</body>
+</html>

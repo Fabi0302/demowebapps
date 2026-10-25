@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MY FACTORY APPS AR - Panel General</title>
+
+  <!-- PWA Manifest & Meta -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2563eb">
+
+  <!-- Fuentes -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --card-bg: rgba(11, 19, 36, 0.88);
+      --card-border: rgba(37, 99, 235, 0.4);
+      --accent: #2563eb;
+      --accent-glow: rgba(37, 99, 235, 0.6);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+    
+    /* Fondo Fotográfico Tecnológico con Capa Oscurecedora */
+    body {
+      background-image: linear-gradient(to bottom, rgba(7, 11, 20, 0.88), rgba(7, 11, 20, 0.96)), 
+                        url('https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: var(--text);
+      padding-bottom: 80px;
+      min-height: 100vh;
+    }
+
+    /* Header & Emblema Tecnológico Senior Incorporado */
+    .hero { 
+      position: relative; 
+      width: 100%; 
+      background: rgba(10, 17, 32, 0.82); 
+      backdrop-filter: blur(12px); 
+      border-bottom: 3px solid var(--accent); 
+      padding: 35px 16px; 
+      text-align: center; 
+    }
+
+    .brand-emblem {
+      display: inline-block;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      border: 2px solid #3b82f6;
+      border-radius: 24px;
+      padding: 22px 30px;
+      box-shadow: 0 0 35px var(--accent-glow), inset 0 0 15px rgba(59, 130, 246, 0.2);
+      max-width: 450px;
+      width: 100%;
+    }
+
+    .emblem-icons {
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+      letter-spacing: 12px;
+      filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.8));
+    }
+
+    .emblem-title {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: linear-gradient(90deg, #60a5fa, #ffffff, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .emblem-subtitle {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #60a5fa;
+      letter-spacing: 3px;
+      margin-top: 2px;
+      margin-bottom: 12px;
+    }
+
+    .emblem-tagline {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #93c5fd;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      border-top: 1px solid rgba(59, 130, 246, 0.3);
+      padding-top: 10px;
+    }
+
+    /* Contenedor & Grilla de Aplicaciones */
+    .container { padding: 24px 16px; max-width: 700px; margin: 0 auto; }
+    .section-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 16px; color: var(--accent); border-left: 4px solid var(--accent); padding-left: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    @media(min-width: 480px) {
+      .grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    .app-card { background: var(--card-bg); border-radius: 16px; border: 1px solid var(--card-border); padding: 18px; text-decoration: none; color: var(--text); display: flex; flex-direction: column; justify-content: space-between; backdrop-filter: blur(12px); transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s; box-shadow: 0 8px 25px rgba(0,0,0,0.5); }
+    .app-card:active { transform: scale(0.97); }
+    .app-card:hover { border-color: #60a5fa; box-shadow: 0 0 25px var(--accent-glow); }
+
+    .app-num { font-size: 0.75rem; font-weight: 800; color: #60a5fa; text-transform: uppercase; margin-bottom: 6px; }
+    .app-title { font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .app-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.4; }
+    
+    .app-action { margin-top: 14px; font-size: 0.8rem; font-weight: 800; color: #fff; background: var(--accent); padding: 8px 12px; border-radius: 10px; text-align: center; box-shadow: 0 0 12px var(--accent-glow); }
+  </style>
+</head>
+<body>
+
+  <!-- Cabecera Institucional con Emblema Tecnológico Senior Garantizado -->
+  <div class="hero">
+    <div class="brand-emblem">
+      <div class="emblem-icons">📡 ⚙️ 🌐</div>
+      <div class="emblem-title">My Factory</div>
+      <div class="emblem-subtitle">Apps AR</div>
+      <div class="emblem-tagline">TECNOLOGÍA QUE CONECTA EL MUNDO FÍSICO CON EL DIGITAL</div>
+    </div>
+  </div>
+
+  <!-- Listado de Acceso a las Aplicaciones PWA -->
+  <div class="container">
+    <div class="section-title">
+      <span>Suite Completa de Aplicaciones PWA (1 al 20)</span>
+    </div>
+    
+    <div class="grid" id="apps-grid">
+      <!-- Se inyectarán dinámicamente las tarjetas con las rutas reales de tus carpetas -->
+    </div>
+  </div>
+
+  <script>
+    // Estructura sincronizada con las 20 carpetas de tu proyecto
+    const apps = [
+      { num: "App 01", name: "Menú QR Gastronómico", desc: "Catálogo de platos y bebidas con códigos QR.", link: "01-menu-qr-gastronomico/index.html" },
+      { num: "App 02", name: "Boliches & Eventos", desc: "Venta de entradas, listas y accesos VIP.", link: "02-boliches-y-events/index.html" },
+      { num: "App 03", name: "Invitación Digital", desc: "Tarjetas interactivas para bodas y eventos.", link: "03-invitacion-digital/index.html" },
+      { num: "App 04", name: "Salud & Nutrición", desc: "Planes de alimentación y seguimiento fitness.", link: "04-salud-y-nutricion/index.html" },
+      { num: "App 05", name: "Estética & Spa", desc: "Turnos para tratamientos y relax.", link: "05-estetica-y-spa/index.html" },
+      { num: "App 06", name: "Coiffeur Femenino", desc: "Estilismo, coloración y turnos de peluquería.", link: "06-coiffeur-femenino/index.html" },
+      { num: "App 07", name: "Barbería Masculina", desc: "Cortes, barba y gestión de turnos barber.", link: "07-barberia-masculina/index.html" },
+      { num: "App 08", name: "Tattoo Studio", desc: "Cotizaciones por diseño y reservas de seña.", link: "08-tattoo-studio/index.html" },
+      { num: "App 09", name: "Inmobiliaria & Usados", desc: "Catálogo de propiedades y tasaciones.", link: "09-inmobiliaria-y-usados/index.html" },
+      { num: "App 10", name: "Guía Turística", desc: "Puntos de interés, mapas y excursiones.", link: "10-guia-turistica/index.html" },
+      { num: "App 11", name: "Gimnasios & Fitness", desc: "Rutinas, clases y control de socios.", link: "11-gimnasios-y-fitness/index.html" },
+      { num: "App 12", name: "Taller Mecánico", desc: "Diagnóstico computarizado y turnos de taller.", link: "12-taller-mecanico/index.html" },
+      { num: "App 13", name: "Servicios del Hogar", desc: "Plomería, electricidad y urgencias 24/7.", link: "13-servicios-hogar/index.html" },
+      { num: "App 14", name: "Pet Shop & Veterinaria", desc: "Alimentos balanceados y atención clínica.", link: "14-pet-shop-y-veterinaria/index.html" },
+      { num: "App 15", name: "Academia & Cursos", desc: "Inscripciones a capacitaciones profesionales.", link: "15-academia-y-cursos/index.html" },
+      { num: "App 16", name: "Indumentaria & Moda", desc: "Lookbook, talles y boutique de ropa.", link: "16-indumentaria-y-moda/index.html" },
+      { num: "App 17", name: "Lavadero de Autos", desc: "Lavado premium, foam y detailing.", link: "17-lavadero-de-autos/index.html" },
+      { num: "App 18", name: "Servicios Profesionales", desc: "Estudio jurídico, contable y consultoría.", link: "18-servicios-profesionales/index.html" },
+      { num: "App 19", name: "Uñas, Pestañas & Facial", desc: "Kapping, lifting y estética de pestañas/uñas.", link: "19-uñas-pestañas-y-facial/index.html" },
+      { num: "App 20", name: "Gastronomía & Delivery", desc: "Menú digital con carrito de compras y WhatsApp.", link: "20-gastronomia-y-delivery/index.html" }
+    ];
+
+    // Renderizar grilla de accesos
+    document.getElementById('apps-grid').innerHTML = apps.map(app => `
+      <a href="${app.link}" class="app-card">
+        <div>
+          <div class="app-num">${app.num}</div>
+          <div class="app-title">${app.name}</div>
+          <div class="app-desc">${app.desc}</div>
+        </div>
+        <div class="app-action">Abrir App PWA ➔</div>
+      </a>
+    `).join('');
+  </script>
+</body>
+</html>

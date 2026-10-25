@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title id="page-title">MODA & BOUTIQUE - Indumentaria Premium</title>
+
+  <!-- PWA Manifest & Meta -->
+  <link rel="manifest" href="data:application/json,{%22name%22:%22ModaIndumentariaPWA%22,%22short_name%22:%22ModaPWA%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%2309070c%22,%22theme_color%22:%22%23ec4899%22}">
+  <meta name="theme-color" content="#ec4899">
+
+  <!-- Fuentes & Librería QR -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #09070c;
+      --card-bg: rgba(18, 14, 24, 0.88);
+      --card-border: rgba(236, 72, 153, 0.35);
+      --accent: #ec4899; /* Rosa Fucsia / Moda Chic */
+      --accent-glow: rgba(236, 72, 153, 0.4);
+      --ig-gradient: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+      --text: #fdf2f8;
+      --text-muted: #f472b6;
+      --success: #10b981;
+      --warning: #f59e0b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 110px; min-height: 100vh; }
+
+    /* Hero Banner Premium */
+    .hero { position: relative; width: 100%; height: 230px; overflow: hidden; background: #1a1025; border-bottom: 3px solid var(--accent); }
+    .hero-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.65) contrast(1.1); }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, var(--bg) 15%, transparent 85%); }
+
+    .profile-header { position: relative; margin-top: -65px; padding: 0 20px; text-align: center; z-index: 10; }
+    .avatar-wrap { position: relative; display: inline-block; }
+    .avatar { width: 110px; height: 110px; border-radius: 26px; object-fit: cover; border: 3px solid var(--accent); box-shadow: 0 0 25px var(--accent-glow); background: #1a1025; }
+
+    h1 { font-size: 1.75rem; font-weight: 800; margin-top: 10px; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; }
+    .subtitle { font-size: 0.9rem; color: var(--text-muted); margin-top: 3px; font-weight: 500; }
+
+    /* Barra Social Premium (WhatsApp + Instagram) */
+    .social-bar { display: flex; justify-content: center; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+    .social-btn {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 10px 20px;
+      border-radius: 24px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .social-btn:active { transform: scale(0.96); }
+    .social-btn.whatsapp {
+      background: #25d366;
+      color: #fff;
+      border: none;
+      box-shadow: 0 0 15px rgba(37, 211, 102, 0.4);
+    }
+    .social-btn.instagram {
+      background: var(--ig-gradient);
+      color: #fff;
+      border: none;
+      box-shadow: 0 0 15px rgba(220, 39, 67, 0.4);
+    }
+
+    /* Contenedor Principal & Cards */
+    .container { padding: 24px 16px; max-width: 600px; margin: 0 auto; }
+    .section-title { font-size: 1.15rem; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; color: var(--accent); border-left: 4px solid var(--accent); padding-left: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .grid { display: grid; gap: 20px; }
+    .card { background: var(--card-bg); border-radius: 20px; border: 1px solid var(--card-border); overflow: hidden; backdrop-filter: blur(12px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .card-img-wrap { position: relative; width: 100%; height: 240px; background: #1a1025; }
+    .card-img { width: 100%; height: 100%; object-fit: cover; }
+    .badge { position: absolute; top: 14px; right: 14px; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); border: 1px solid var(--accent); color: var(--accent); font-size: 0.72rem; font-weight: 800; padding: 5px 12px; border-radius: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .card-body { padding: 18px; }
+    .card-title { font-size: 1.25rem; font-weight: 800; color: #fff; }
+    .card-desc { font-size: 0.9rem; color: #e2e8f0; margin: 8px 0 14px; line-height: 1.5; white-space: pre-line; }
+    .card-photo-caption { font-size: 0.82rem; font-style: italic; color: #fbcfe8; background: rgba(236, 72, 153, 0.15); border-left: 3px solid var(--accent); padding: 8px 12px; border-radius: 6px; margin-bottom: 14px; }
+
+    .card-footer { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .price { font-size: 1.4rem; font-weight: 900; color: var(--accent); }
+
+    .btn { background: var(--accent); color: #fff; border: none; padding: 11px 20px; border-radius: 14px; font-weight: 800; font-size: 0.9rem; cursor: pointer; box-shadow: 0 0 18px var(--accent-glow); transition: transform 0.2s; text-transform: uppercase; letter-spacing: 0.5px; }
+    .btn:active { transform: scale(0.96); }
+
+    /* Modales */
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 1000; justify-content: center; align-items: center; padding: 16px; backdrop-filter: blur(8px); }
+    .modal.active { display: flex; }
+    .modal-card { background: #120e18; border: 1px solid var(--card-border); border-radius: 24px; padding: 24px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+    .close-btn { float: right; background: none; border: none; color: var(--text-muted); font-size: 1.6rem; cursor: pointer; }
+
+    label { font-size: 0.82rem; font-weight: 700; color: var(--text-muted); display: block; margin-top: 14px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+    input, select, textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: #fff; padding: 12px 14px; border-radius: 12px; font-size: 0.95rem; outline: none; }
+    input:focus, textarea:focus { border-color: var(--accent); }
+    
+    .admin-trigger { text-align: center; margin-top: 40px; color: var(--text-muted); font-size: 0.82rem; cursor: pointer; text-decoration: underline; font-weight: 600; }
+    #qrcode { display: flex; justify-content: center; background: #fff; padding: 14px; border-radius: 14px; margin-top: 18px; }
+  </style>
+</head>
+<body>
+
+  <!-- Hero Banner -->
+  <div class="hero">
+    <img id="view-banner" class="hero-img" src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=900" alt="Banner Indumentaria & Moda">
+    <div class="hero-overlay"></div>
+  </div>
+
+  <!-- Header Perfil -->
+  <div class="profile-header">
+    <div class="avatar-wrap">
+      <img id="view-logo" class="avatar" src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400" alt="Logo Boutique">
+    </div>
+    <h1 id="view-title">MAISON DE MODA</h1>
+    <p id="view-subtitle" class="subtitle">Nueva Colección & Tendencias de Temporada</p>
+
+    <!-- Botones de Redes Sociales (WhatsApp + Instagram) -->
+    <div class="social-bar">
+      <button class="social-btn whatsapp" onclick="sendWhatsAppDirect()">💬 Consultas & Stock</button>
+      <a id="view-ig-link" href="#" target="_blank" class="social-btn instagram">📸 Instagram Oficial</a>
+    </div>
+  </div>
+
+  <!-- Contenido de Prendas -->
+  <div class="container">
+    <div class="section-title">
+      <span>Lookbook & Prendas Destacadas</span>
+    </div>
+    <div class="grid" id="items-grid"></div>
+
+    <div class="admin-trigger" onclick="openModal('admin-modal')">⚙ Panel de Administración (admin123)</div>
+  </div>
+
+  <!-- Modal Comprar / Consultar Talle -->
+  <div class="modal" id="action-modal">
+    <div class="modal-card">
+      <button class="close-btn" onclick="closeModal('action-modal')">&times;</button>
+      <h2 id="modal-item-title" style="color: #fff; font-size: 1.3rem; font-weight: 800;">Consultar Prenda</h2>
+      
+      <label>Tu Nombre y Apellido:</label>
+      <input type="text" id="client-name" placeholder="Ej: Camila Fernández">
+
+      <label>Talle / Color de Interés:</label>
+      <input type="text" id="client-size" placeholder="Ej: Talle S / Color Negro o Natural">
+
+      <label>Método de Entrega:</label>
+      <select id="client-delivery">
+        <option value="Retiro por el Local / Boutique">🛍 Retiro por el Local / Boutique</option>
+        <option value="Envío a Domicilio (CABA / GBA)">📦 Envío a Domicilio</option>
+        <option value="Envío al Interior del País">✈️ Envío al Interior del País</option>
+      </select>
+
+      <label>Comentarios o Dudas (Opcional):</label>
+      <textarea id="client-notes" rows="2" placeholder="Ej: ¿Tienen stock disponible para entrega inmediata?"></textarea>
+
+      <button class="btn" style="width: 100%; margin-top: 22px;" onclick="submitOrder()">Enviar Pedido por WhatsApp</button>
+    </div>
+  </div>
+
+  <!-- Modal Admin -->
+  <div class="modal" id="admin-modal">
+    <div class="modal-card">
+      <button class="close-btn" onclick="closeModal('admin-modal')">&times;</button>
+      <h2 style="color: #fff; font-size: 1.3rem; font-weight: 800; margin-bottom: 10px;">Administración Boutique</h2>
+      
+      <div id="admin-login-sec">
+        <label>Contraseña Admin (admin123):</label>
+        <input type="password" id="admin-pass">
+        <button class="btn" style="width: 100%; margin-top: 15px;" onclick="loginAdmin()">Ingresar</button>
+      </div>
+
+      <div id="admin-panel-sec" style="display: none;">
+        <label>Nombre de la Marca / Boutique:</label>
+        <input type="text" id="cfg-title">
+
+        <label>Subtítulo / Eslogan:</label>
+        <input type="text" id="cfg-subtitle">
+
+        <label>WhatsApp Contacto (Sin +):</label>
+        <input type="text" id="cfg-phone">
+
+        <label>📸 Instagram (Usuario o Link completo):</label>
+        <input type="text" id="cfg-instagram" placeholder="Ej: maisondemoda o https://instagram.com/maisondemoda">
+
+        <label>📷 Foto de Portada Banner (Galería Celular):</label>
+        <input type="file" id="cfg-file-banner" accept="image/*">
+
+        <label>📷 Foto Perfil / Logo (Galería Celular):</label>
+        <input type="file" id="cfg-file-logo" accept="image/*">
+
+        <button class="btn" style="width:100%; margin-top:18px;" onclick="saveConfig()">Guardar Cambios Generales</button>
+
+        <hr style="margin: 24px 0; border-color: var(--card-border);">
+        <h3 style="color: #fff; font-size: 1.1rem; font-weight: 700;">Publicar Prenda o Look</h3>
+        
+        <label>Nombre de la Prenda:</label>
+        <input type="text" id="new-item-title" placeholder="Ej: Blazer Oversize Sastrero Lino">
+        
+        <label>Etiqueta / Temporada:</label>
+        <input type="text" id="new-item-badge" placeholder="Ej: New In | 3 Cuotas Sin Interés">
+
+        <label>Precio ($):</label>
+        <input type="number" id="new-item-price" placeholder="Ej: 58000">
+        
+        <label>Descripción detallada:</label>
+        <textarea id="new-item-desc" rows="2" placeholder="Confeccionado en lino puro importado. Forrería interna, bolsillos laterales..."></textarea>
+        
+        <label>✍️ Pie de foto explicativo (Talles disponibles):</label>
+        <input type="text" id="new-item-caption" placeholder="Ej: *Talles: S, M y L. Colores: Negro, Beige y Off White.*">
+
+        <label>📷 Foto de la Prenda (Galería Celular):</label>
+        <input type="file" id="new-item-file" accept="image/*">
+
+        <button class="btn" style="width:100%; margin-top:18px; background: var(--accent);" onclick="addItem()">Publicar Prenda</button>
+
+        <div id="qrcode"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let config = JSON.parse(localStorage.getItem('moda_cfg')) || {
+      title: 'MAISON DE MODA',
+      subtitle: 'Nueva Colección & Tendencias de Temporada',
+      phone: '5491100000000',
+      instagram: 'https://instagram.com',
+      banner: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=900',
+      logo: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400'
+    };
+
+    let items = JSON.parse(localStorage.getItem('moda_items')) || [
+      { 
+        id: 1, 
+        title: 'Blazer Sastrero Oversize de Lino', 
+        price: 64000, 
+        desc: 'Diseño estructurado con hombreras sutiles y botones carey. Ideal para combinar con looks formales o urbanos.', 
+        caption: '✨ Talles S, M y L. Colores: Natural, Negro y Rosa Pastel.',
+        badge: 'New In', 
+        img: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600' 
+      },
+      { 
+        id: 2, 
+        title: 'Vestido Midi Satinado con Tirantes', 
+        price: 49000, 
+        desc: 'Caída fluida con escote en V y espalda descubierta regulable. Tela satinada de alta calidad con brillo delicado.', 
+        caption: '👗 Edición limitada. Ideal eventos y noche.',
+        badge: 'Tendencia', 
+        img: 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=600' 
+      },
+      { 
+        id: 3, 
+        title: 'Pantalón Wide Leg de Sastrería', 
+        price: 52000, 
+        desc: 'Corte recto amplio con tiro alto y pinzas frontales. Comodidad y elegancia en una sola prenda.', 
+        caption: '👖 Cintura con elástico trasero para mejor calce.',
+        badge: 'Bestseller', 
+        img: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600' 
+      }
+    ];
+
+    let selectedItem = null;
+    let tempBanner = "", tempLogo = "", tempItemImg = "";
+
+    function init() {
+      document.getElementById('view-title').innerText = config.title;
+      document.getElementById('view-subtitle').innerText = config.subtitle;
+      document.getElementById('view-banner').src = config.banner;
+      document.getElementById('view-logo').src = config.logo;
+      document.getElementById('page-title').innerText = `${config.title} - Moda PWA`;
+      
+      // Integración dinámica del Botón de Instagram
+      let igVal = config.instagram || '';
+      const igBtn = document.getElementById('view-ig-link');
+      if(igVal.trim() !== '') {
+        let cleanIg = igVal.trim();
+        let handle = cleanIg.replace('https://instagram.com/', '').replace('http://instagram.com/', '').replace('@', '').replace('/', '');
+        igBtn.innerHTML = `📸 @${handle}`;
+        igBtn.href = cleanIg.startsWith('http') ? cleanIg : `https://instagram.com/${handle}`;
+        igBtn.style.display = 'inline-flex';
+      } else {
+        igBtn.style.display = 'none';
+      }
+
+      renderItems();
+    }
+
+    function renderItems() {
+      document.getElementById('items-grid').innerHTML = items.map(i => `
+        <div class="card">
+          <div class="card-img-wrap">
+            <span class="badge">${i.badge || 'Moda'}</span>
+            <img src="${i.img}" class="card-img" alt="${i.title}">
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">${i.title}</h3>
+            <p class="card-desc">${i.desc}</p>
+            ${i.caption ? `<div class="card-photo-caption">${i.caption}</div>` : ''}
+            <div class="card-footer">
+              <span class="price">$${Number(i.price).toLocaleString()}</span>
+              <button class="btn" onclick="openBooking('${i.title}')">Consultar Talle</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    /* Galería Celular API FileReader */
+    document.getElementById('cfg-file-banner').addEventListener('change', e => readFile(e, res => tempBanner = res));
+    document.getElementById('cfg-file-logo').addEventListener('change', e => readFile(e, res => tempLogo = res));
+    document.getElementById('new-item-file').addEventListener('change', e => readFile(e, res => tempItemImg = res));
+
+    function readFile(e, callback) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = evt => callback(evt.target.result);
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function openBooking(title) {
+      selectedItem = title;
+      document.getElementById('modal-item-title').innerText = `Consultar: ${title}`;
+      openModal('action-modal');
+    }
+
+    function sendWhatsAppDirect() {
+      const phone = config.phone.replace(/[^0-9]/g, '');
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent('¡Hola! Quisiera realizar una consulta sobre los talles, stock y nueva colección de la boutique.')}`, '_blank');
+    }
+
+    function submitOrder() {
+      const name = document.getElementById('client-name').value;
+      const size = document.getElementById('client-size').value;
+      const delivery = document.getElementById('client-delivery').value;
+      const notes = document.getElementById('client-notes').value;
+      const targetPhone = config.phone.replace(/[^0-9]/g, '');
+
+      if (!name || !size) { alert('Completá tu nombre y el talle o color de interés.'); return; }
+
+      let msg = `Hola *${config.title}*!\n\n👗 *Consulta por Prenda:* ${selectedItem}\n👤 *Cliente:* ${name}\n📏 *Talle/Color:* ${size}\n📦 *Entrega:* ${delivery}`;
+      if(notes.trim() !== '') msg += `\n📝 *Dudas:* ${notes.trim()}`;
+
+      closeModal('action-modal');
+      window.open(`https://wa.me/${targetPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    function loginAdmin() {
+      if(document.getElementById('admin-pass').value === 'admin123') {
+        document.getElementById('admin-login-sec').style.display = 'none';
+        document.getElementById('admin-panel-sec').style.display = 'block';
+        document.getElementById('cfg-title').value = config.title;
+        document.getElementById('cfg-subtitle').value = config.subtitle;
+        document.getElementById('cfg-phone').value = config.phone;
+        document.getElementById('cfg-instagram').value = config.instagram || '';
+        
+        document.getElementById('qrcode').innerHTML = '';
+        new QRCode(document.getElementById("qrcode"), { text: window.location.href, width: 140, height: 140 });
+      } else { alert('Contraseña incorrecta (admin123)'); }
+    }
+
+    function saveConfig() {
+      config.title = document.getElementById('cfg-title').value;
+      config.subtitle = document.getElementById('cfg-subtitle').value;
+      config.phone = document.getElementById('cfg-phone').value;
+      config.instagram = document.getElementById('cfg-instagram').value;
+      
+      if(tempBanner) config.banner = tempBanner;
+      if(tempLogo) config.logo = tempLogo;
+
+      localStorage.setItem('moda_cfg', JSON.stringify(config));
+      init();
+      alert('¡Configuración e Instagram actualizados con éxito!');
+    }
+
+    function addItem() {
+      const title = document.getElementById('new-item-title').value;
+      const badge = document.getElementById('new-item-badge').value || 'Moda';
+      const price = document.getElementById('new-item-price').value;
+      const desc = document.getElementById('new-item-desc').value;
+      const caption = document.getElementById('new-item-caption').value;
+
+      if(!title || !price || !tempItemImg) { alert('Completá título, precio y seleccioná una foto desde tu celular.'); return; }
+
+      items.push({ id: Date.now(), title, price, desc, caption, badge, img: tempItemImg });
+      localStorage.setItem('moda_items', JSON.stringify(items));
+      renderItems();
+      alert('¡Prenda publicada correctamente!');
+    }
+
+    init();
+  </script>
+</body>
+</html>
